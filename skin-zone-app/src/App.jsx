@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
@@ -23,10 +23,56 @@ import {
   Package
 } from 'lucide-react'
 import './App.css'
+import HypergraphVisualization from './components/HypergraphVisualization'
+
+// Load hypergraph data
+const hypergraphData = {
+  "nodes": [
+    { "id": "making_cosmetics", "type": "supplier", "name": "Making Cosmetics" },
+    { "id": "lotion_crafter", "type": "supplier", "name": "Lotion Crafter" },
+    { "id": "fnwl", "type": "supplier", "name": "From Nature With Love" },
+    { "id": "pure_spa_direct", "type": "supplier", "name": "Pure Spa Direct" },
+    { "id": "universal_companies", "type": "supplier", "name": "Universal Companies" },
+    { "id": "hyaluronic_acid", "type": "ingredient", "name": "Hyaluronic Acid" },
+    { "id": "vitamin_c", "type": "ingredient", "name": "Vitamin C" },
+    { "id": "retinol", "type": "ingredient", "name": "Retinol" },
+    { "id": "niacinamide", "type": "ingredient", "name": "Niacinamide" },
+    { "id": "vitamin_e", "type": "ingredient", "name": "Vitamin E" },
+    { "id": "luxe_skin_studio", "type": "salon", "name": "Luxe Skin Studio" },
+    { "id": "zen_wellness_spa", "type": "salon", "name": "Zen Wellness Spa" },
+    { "id": "advanced_derma_clinic", "type": "salon", "name": "Advanced Derma Clinic" },
+    { "id": "facials", "type": "service", "name": "Facials" },
+    { "id": "chemical_peels", "type": "service", "name": "Chemical Peels" },
+    { "id": "microdermabrasion", "type": "service", "name": "Microdermabrasion" },
+    { "id": "humectant", "type": "category", "name": "Humectant" },
+    { "id": "antioxidant", "type": "category", "name": "Antioxidant" },
+    { "id": "anti_aging", "type": "category", "name": "Anti-aging" },
+    { "id": "vitamin", "type": "category", "name": "Vitamin" }
+  ],
+  "edges": [
+    { "source": "making_cosmetics", "target": "hyaluronic_acid" },
+    { "source": "making_cosmetics", "target": "vitamin_c" },
+    { "source": "lotion_crafter", "target": "retinol" },
+    { "source": "lotion_crafter", "target": "vitamin_e" },
+    { "source": "fnwl", "target": "niacinamide" },
+    { "source": "hyaluronic_acid", "target": "humectant" },
+    { "source": "vitamin_c", "target": "antioxidant" },
+    { "source": "retinol", "target": "anti_aging" },
+    { "source": "niacinamide", "target": "vitamin" },
+    { "source": "vitamin_e", "target": "antioxidant" },
+    { "source": "luxe_skin_studio", "target": "facials" },
+    { "source": "luxe_skin_studio", "target": "chemical_peels" },
+    { "source": "zen_wellness_spa", "target": "facials" },
+    { "source": "advanced_derma_clinic", "target": "microdermabrasion" },
+    { "source": "pure_spa_direct", "target": "luxe_skin_studio" },
+    { "source": "universal_companies", "target": "zen_wellness_spa" },
+    { "source": "universal_companies", "target": "advanced_derma_clinic" }
+  ]
+}
 
 // Cognitive Synergy Components
 const CognitiveDashboard = () => {
-  const [synergyMetrics, setSynergyMetrics] = useState({
+  const [synergyMetrics, _setSynergyMetrics] = useState({
     networkStrength: 87,
     adaptiveCapacity: 92,
     emergentIntelligence: 78,
@@ -138,13 +184,19 @@ const CognitiveDashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Hypergraph Visualization */}
+      <HypergraphVisualization 
+        data={hypergraphData} 
+        onNodeSelect={(node) => console.log('Selected node:', node)}
+      />
     </div>
   )
 }
 
 // Ingredient Marketplace Component
 const IngredientMarketplace = () => {
-  const [ingredients, setIngredients] = useState([
+  const [ingredients, _setIngredients] = useState([
     {
       id: 1,
       name: "Hyaluronic Acid",
@@ -286,7 +338,7 @@ const IngredientMarketplace = () => {
 
 // Salon & Spa Directory Component
 const SalonDirectory = () => {
-  const [salons, setSalons] = useState([
+  const [salons, _setSalons] = useState([
     {
       id: 1,
       name: "Luxe Skin Studio",
@@ -393,7 +445,7 @@ const SalonDirectory = () => {
 }
 
 // Main Navigation Component
-const Navigation = ({ activeTab, setActiveTab }) => {
+const Navigation = () => {
   return (
     <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -432,7 +484,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

@@ -5,7 +5,10 @@ from supabase import create_client, Client
 # Get Supabase credentials from environment variables
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
+print(f"Supabase URL: {url}")
+print(f"Supabase Key: {key}")
 supabase: Client = create_client(url, key)
+
 
 # Load hypergraph data from JSON file
 with open("/home/ubuntu/skin-zone/hypergraph_data.json", "r") as f:

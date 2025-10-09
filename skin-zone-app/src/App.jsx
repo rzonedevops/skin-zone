@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
+import CognitiveSynergy from '@/components/CognitiveSynergy.jsx'
 import { 
   Search, 
   ShoppingCart, 
@@ -472,7 +473,7 @@ function App() {
               <h2 className="text-3xl font-bold">Cognitive Synergy Dashboard</h2>
               <p className="text-gray-600">Monitor the collective intelligence of the Skin Zone ecosystem</p>
             </div>
-            <CognitiveDashboard />
+            <CognitiveSynergy />
           </TabsContent>
         </Tabs>
       </main>

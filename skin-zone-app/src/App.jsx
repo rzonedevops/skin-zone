@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
 import CognitiveSynergy from '@/components/CognitiveSynergy.jsx'
+import OpenCogInsights from '@/components/OpenCogInsights.jsx'
 import { 
   Search, 
   ShoppingCart, 
@@ -437,7 +438,7 @@ function App() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="marketplace" className="flex items-center gap-2">
               <Beaker className="h-4 w-4" />
               Ingredients
@@ -446,8 +447,12 @@ function App() {
               <Sparkles className="h-4 w-4" />
               Salons & Spas
             </TabsTrigger>
-            <TabsTrigger value="cognitive" className="flex items-center gap-2">
+            <TabsTrigger value="opencog" className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
+              OpenCog AI
+            </TabsTrigger>
+            <TabsTrigger value="cognitive" className="flex items-center gap-2">
+              <Network className="h-4 w-4" />
               Cognitive Synergy
             </TabsTrigger>
           </TabsList>
@@ -466,6 +471,17 @@ function App() {
               <p className="text-gray-600">Find and book treatments at premium skincare facilities</p>
             </div>
             <SalonDirectory />
+          </TabsContent>
+
+          <TabsContent value="opencog" className="space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-bold">OpenCog Cognitive Insights</h2>
+              <p className="text-gray-600">Advanced AI reasoning and recommendations powered by OpenCog</p>
+            </div>
+            <OpenCogInsights 
+              customerId="customer_demo"
+              tenantId="default"
+            />
           </TabsContent>
 
           <TabsContent value="cognitive" className="space-y-6">

@@ -317,6 +317,141 @@ export async function getHealthStatus() {
   return restRequest('/health');
 }
 
+// OpenCog Cognitive Queries
+
+export async function findPattern(pattern, tenantId = null) {
+  const query = `
+    query FindPattern($pattern: String!, $tenantId: String) {
+      findPattern(pattern: $pattern, tenantId: $tenantId) {
+        id
+        type
+        name
+        properties {
+          category
+          description
+        }
+        truthValue {
+          strength
+          confidence
+        }
+        attentionValue {
+          sti
+          lti
+          vlti
+        }
+      }
+    }
+  `;
+  
+  const data = await graphqlQuery(query, { 
+    pattern: JSON.stringify(pattern), 
+    tenantId 
+  });
+  return data.findPattern;
+}
+
+export async function cognitiveInsights(context, tenantId = null) {
+  const query = `
+    query CognitiveInsights($context: String!, $tenantId: String) {
+      cognitiveInsights(context: $context, tenantId: $tenantId) {
+        reasoning {
+          rule
+          applies
+          priority
+        }
+        confidence
+        explanations
+        alternatives {
+          id
+          name
+          score
+          reason
+        }
+      }
+    }
+  `;
+  
+  const data = await graphqlQuery(query, { 
+    context: JSON.stringify(context), 
+    tenantId 
+  });
+  return data.cognitiveInsights;
+}
+
+export async function analyzeSupplyChain(productId, analysisType, tenantId = null) {
+  const query = `
+    query AnalyzeSupplyChain($productId: ID!, $analysisType: SupplyChainAnalysisType!, $tenantId: String) {
+      analyzeSupplyChain(productId: $productId, analysisType: $analysisType, tenantId: $tenantId) {
+        productId
+        analysisType
+        score
+        confidence
+        insights {
+          metric
+          value
+          impact
+        }
+        recommendations {
+          type
+          priority
+          message
+        }
+      }
+    }
+  `;
+  
+  const data = await graphqlQuery(query, { productId, analysisType, tenantId });
+  return data.analyzeSupplyChain;
+}
+
+export async function cognitiveRecommendations(userId, context, tenantId = null) {
+  const query = `
+    query CognitiveRecommendations($userId: ID!, $context: String!, $tenantId: String) {
+      cognitiveRecommendations(userId: $userId, context: $context, tenantId: $tenantId) {
+        id
+        type
+        name
+        properties {
+          description
+          price
+          rating
+        }
+        cognitiveScore
+        reasoning {
+          rule
+          impact
+          reason
+        }
+        confidence
+      }
+    }
+  `;
+  
+  const data = await graphqlQuery(query, { 
+    userId, 
+    context: JSON.stringify(context), 
+    tenantId 
+  });
+  return data.cognitiveRecommendations;
+}
+
+export async function inferRelationships(nodeId, depth = 2, tenantId = null) {
+  const query = `
+    query InferRelationships($nodeId: ID!, $depth: Int, $tenantId: String) {
+      inferRelationships(nodeId: $nodeId, depth: $depth, tenantId: $tenantId) {
+        source
+        target
+        type
+        confidence
+        reasoning
+      }
+    }
+  `;
+  
+  const data = await graphqlQuery(query, { nodeId, depth, tenantId });
+  return data.inferRelationships;
+}
+
 // Export all methods
 export default {
   // Entity queries
@@ -339,6 +474,13 @@ export default {
   // Organizations
   getOrganization,
   getOrganizations,
+  
+  // OpenCog cognitive queries
+  findPattern,
+  cognitiveInsights,
+  analyzeSupplyChain,
+  cognitiveRecommendations,
+  inferRelationships,
   
   // REST API
   getEntities,

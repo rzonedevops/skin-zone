@@ -4,9 +4,22 @@ A comprehensive architecture for a multi-tenant beauty marketplace platform that
 
 ## Project Structure
 
+- **backend/** - HyperGraphQL API backend
+  - GraphQL and REST API endpoints
+  - Org-aware hypergraph queries
+  - Supply chain tracing
+  - GitHub integration services
+
+- **skin-zone-app/** - React frontend application
+  - User interface components
+  - HyperGraphQL API client
+  - Interactive hypergraph visualization
+
 - **documentation/** - Comprehensive technical documentation
   - Final Architecture Document
   - Technical Documentation
+  - HyperGraphQL API Documentation
+  - Usage Examples
   - Scalability & Security Validation
 
 - **architecture/** - Detailed architectural components
@@ -38,18 +51,24 @@ A comprehensive architecture for a multi-tenant beauty marketplace platform that
 ## Key Features
 
 1. **Multi-tenant Architecture** - Supporting different brands and salons
-2. **AppDirect Integration** - For subscription and billing management
-3. **HGNN Database** - Providing supply chain insights and recommendations
-4. **Cheerleader Mascot** - Prominent animated mascot across all interfaces
-5. **Responsive Design** - Supporting desktop and mobile devices
+2. **HyperGraphQL API** - GraphQL and REST API for org-aware hypergraph queries
+3. **Supply Chain Tracing** - Track products through ingredients to suppliers
+4. **Hypergraph Navigation** - Path finding and graph traversal capabilities
+5. **GitHub Integration** - Map repo folder structure to hypergraph entities
+6. **AppDirect Integration** - For subscription and billing management
+7. **HGNN Database** - Providing supply chain insights and recommendations
+8. **Cheerleader Mascot** - Prominent animated mascot across all interfaces
+9. **Responsive Design** - Supporting desktop and mobile devices
 
 ## Technology Stack
 
-- **Frontend**: React/Next.js, TypeScript, CSS Modules/Styled Components
-- **Backend**: Python (Flask/FastAPI) for core services, JAX for HGNN/CEO subsystem
-- **Database**: PostgreSQL (relational data), Neo4j (graph database), Redis (caching)
-- **Messaging**: RabbitMQ or Kafka for inter-service communication
-- **Containerization**: Docker with Kubernetes orchestration
+- **Frontend**: React with Vite, TailwindCSS, Radix UI components
+- **Backend**: Node.js with Express, GraphQL (express-graphql)
+- **API Layer**: HyperGraphQL API for hypergraph queries
+- **Database**: JSON-based hypergraph data with in-memory processing
+- **Future**: PostgreSQL (relational data), Neo4j (graph database), Redis (caching)
+- **Messaging**: RabbitMQ or Kafka for inter-service communication (planned)
+- **Containerization**: Docker with Kubernetes orchestration (planned)
 - **Cloud Infrastructure**: AWS/GCP/Azure (cloud-agnostic design)
 
 ## Implementation Roadmap
@@ -59,6 +78,79 @@ A comprehensive architecture for a multi-tenant beauty marketplace platform that
 3. **Advanced Features Phase** - Supply chain insights and recommendations
 4. **Optimization Phase** - Performance tuning and security hardening
 
+## Quick Start
+
+### Backend API
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+The HyperGraphQL API will be available at:
+- GraphQL endpoint: `http://localhost:4000/graphql`
+- GraphiQL interface: `http://localhost:4000/graphql` (in browser)
+- REST API: `http://localhost:4000/api`
+
+See [Backend README](backend/README.md) for detailed API documentation.
+
+### Frontend Application
+
+```bash
+cd skin-zone-app
+npm install
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+## API Documentation
+
+- **[HyperGraphQL API Documentation](documentation/hypergraphql_api.md)** - Complete API reference
+- **[Usage Examples](documentation/hypergraphql_usage_examples.md)** - Practical examples and patterns
+- **[Backend README](backend/README.md)** - Backend setup and configuration
+
+## Example Queries
+
+### Get all ingredients
+
+```graphql
+{
+  nodes(filter: { type: "ingredient" }) {
+    id
+    name
+    properties {
+      category
+      description
+    }
+  }
+}
+```
+
+### Trace supply chain
+
+```graphql
+{
+  traceSupplyChain(productId: "product_123") {
+    product { name }
+    ingredients { name }
+    suppliers { name }
+  }
+}
+```
+
+### Org-aware query
+
+```graphql
+{
+  nodes(filter: { type: "salon", tenantId: "luxe_skin_studio" }) {
+    id
+    name
+  }
+}
+```
+
 ## Repository Organization
 
-This repository contains the complete architectural design and technical documentation for the Skin Zone beauty marketplace platform. It serves as a blueprint for implementation and can be used as a reference for development teams.
+This repository contains the complete architectural design, technical documentation, and implementation of the HyperGraphQL API for the Skin Zone beauty marketplace platform. It serves as both a reference architecture and a functional API implementation.

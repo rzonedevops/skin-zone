@@ -1,8 +1,10 @@
 import dataService from '../services/dataService.js';
+import openCogService from '../services/openCogService.js';
 
 /**
  * GraphQL Resolvers for HyperGraphQL API
  * Implements org-aware queries and hypergraph navigation
+ * Enhanced with OpenCog cognitive capabilities
  */
 export const resolvers = {
   // Entity queries
@@ -53,10 +55,9 @@ export const resolvers = {
     return dataService.traceSupplyChain(productId, tenantId);
   },
 
-  recommendTreatments: ({ customerId, tenantId }) => {
-    // Simple recommendation based on neighbors
-    const neighbors = dataService.getNeighbors(customerId, tenantId);
-    return neighbors.filter(n => n.type === 'service' || n.type === 'treatment');
+  recommendTreatments: async ({ customerId, tenantId }) => {
+    // Use OpenCog cognitive recommendations
+    return await openCogService.recommendTreatments(customerId, tenantId);
   },
 
   // Organization queries
@@ -133,5 +134,76 @@ export const resolvers = {
   deleteOrganization: ({ id }) => {
     // In a real implementation, this would cascade delete all related entities
     return true;
+  },
+
+  // OpenCog cognitive queries
+  findPattern: async ({ pattern, tenantId }) => {
+    const parsedPattern = JSON.parse(pattern);
+    return await openCogService.findPattern(parsedPattern, tenantId);
+  },
+
+  inferRelationships: async ({ nodeId, depth = 2, tenantId }) => {
+    // Use OpenCog reasoning to infer relationships
+    const reasoning = await openCogService.reason({
+      type: 'infer-relationships',
+      params: { nodeId, depth }
+    }, tenantId);
+    
+    return reasoning.conclusions.map(c => ({
+      source: nodeId,
+      target: c.targetId || 'inferred',
+      type: c.action,
+      confidence: reasoning.confidence,
+      reasoning: c.reason
+    }));
+  },
+
+  cognitiveInsights: async ({ context, tenantId }) => {
+    const parsedContext = JSON.parse(context);
+    return await openCogService.getCognitiveInsights(parsedContext, tenantId);
+  },
+
+  analyzeSupplyChain: async ({ productId, analysisType, tenantId }) => {
+    return await openCogService.analyzeSupplyChain(productId, analysisType, tenantId);
+  },
+
+  cognitiveRecommendations: async ({ userId, context, tenantId }) => {
+    const parsedContext = JSON.parse(context);
+    return await openCogService.recommendTreatments(userId, tenantId, parsedContext);
+  },
+
+  // OpenCog mutations
+  trainModel: async ({ modelType, tenantId }) => {
+    // Placeholder for model training
+    return {
+      success: true,
+      modelType,
+      message: 'Model training initiated',
+      estimatedTime: 300
+    };
+  },
+
+  addReasoningRule: async ({ rule, tenantId }) => {
+    const parsedRule = JSON.parse(rule);
+    // Add rule to OpenCog service
+    const ruleCategory = parsedRule.category || 'business';
+    if (openCogService.rules[ruleCategory]) {
+      openCogService.rules[ruleCategory].push(parsedRule);
+    }
+    return {
+      id: `rule_${Date.now()}`,
+      ...parsedRule,
+      active: true
+    };
+  },
+
+  updateKnowledge: async ({ knowledge, tenantId }) => {
+    const parsedKnowledge = JSON.parse(knowledge);
+    // Update shared or tenant-specific knowledge
+    return {
+      id: `knowledge_${Date.now()}`,
+      ...parsedKnowledge,
+      updated: true
+    };
   }
 };

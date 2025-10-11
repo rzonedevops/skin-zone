@@ -52,19 +52,22 @@ A comprehensive architecture for a multi-tenant beauty marketplace platform that
 
 1. **Multi-tenant Architecture** - Supporting different brands and salons
 2. **HyperGraphQL API** - GraphQL and REST API for org-aware hypergraph queries
-3. **Supply Chain Tracing** - Track products through ingredients to suppliers
-4. **Hypergraph Navigation** - Path finding and graph traversal capabilities
-5. **GitHub Integration** - Map repo folder structure to hypergraph entities
-6. **AppDirect Integration** - For subscription and billing management
-7. **HGNN Database** - Providing supply chain insights and recommendations
-8. **Cheerleader Mascot** - Prominent animated mascot across all interfaces
-9. **Responsive Design** - Supporting desktop and mobile devices
+3. **OpenCog Cognitive AI** - Advanced reasoning, learning, and decision-making capabilities
+4. **Supply Chain Tracing** - Track products through ingredients to suppliers with cognitive analysis
+5. **Hypergraph Navigation** - Path finding and graph traversal capabilities
+6. **GitHub Integration** - Map repo folder structure to hypergraph entities
+7. **AppDirect Integration** - For subscription and billing management
+8. **HGNN Database** - Providing supply chain insights and recommendations
+9. **Cognitive Recommendations** - AI-powered treatment and product recommendations with reasoning
+10. **Cheerleader Mascot** - Prominent animated mascot across all interfaces
+11. **Responsive Design** - Supporting desktop and mobile devices
 
 ## Technology Stack
 
 - **Frontend**: React with Vite, TailwindCSS, Radix UI components
 - **Backend**: Node.js with Express, GraphQL (express-graphql)
 - **API Layer**: HyperGraphQL API for hypergraph queries
+- **Cognitive AI**: OpenCog-inspired cognitive architecture with AtomSpace, Pattern Matcher, and PLN reasoning
 - **Database**: JSON-based hypergraph data with in-memory processing
 - **Future**: PostgreSQL (relational data), Neo4j (graph database), Redis (caching)
 - **Messaging**: RabbitMQ or Kafka for inter-service communication (planned)
@@ -147,6 +150,53 @@ The frontend will be available at `http://localhost:5173`
   nodes(filter: { type: "salon", tenantId: "luxe_skin_studio" }) {
     id
     name
+  }
+}
+```
+
+### OpenCog cognitive recommendations
+
+```graphql
+{
+  cognitiveRecommendations(
+    userId: "customer_123"
+    context: "{\"type\": \"treatment\"}"
+    tenantId: "luxe_skin_studio"
+  ) {
+    id
+    name
+    cognitiveScore
+    confidence
+    reasoning {
+      rule
+      impact
+      reason
+    }
+  }
+}
+```
+
+### OpenCog supply chain analysis
+
+```graphql
+{
+  analyzeSupplyChain(
+    productId: "product_123"
+    analysisType: TRANSPARENCY
+    tenantId: "beauty_brand_001"
+  ) {
+    score
+    confidence
+    insights {
+      metric
+      value
+      impact
+    }
+    recommendations {
+      type
+      priority
+      message
+    }
   }
 }
 ```

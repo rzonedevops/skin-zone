@@ -107,6 +107,129 @@ export const typeDefs = buildSchema(`
     suppliers: [Node!]!
     path: Path!
   }
+
+  # OpenCog Cognitive Types
+
+  type PatternMatch {
+    id: ID!
+    type: String!
+    name: String!
+    properties: NodeProperties
+    truthValue: TruthValue
+    attentionValue: AttentionValue
+  }
+
+  type TruthValue {
+    strength: Float!
+    confidence: Float!
+  }
+
+  type AttentionValue {
+    sti: Int!
+    lti: Int!
+    vlti: Int!
+  }
+
+  type InferredRelationship {
+    source: String!
+    target: String!
+    type: String!
+    confidence: Float!
+    reasoning: String!
+  }
+
+  type CognitiveInsights {
+    reasoning: [ReasoningStep!]!
+    confidence: Float!
+    explanations: [String!]!
+    alternatives: [Alternative!]!
+  }
+
+  type ReasoningStep {
+    rule: String!
+    applies: Boolean!
+    priority: Int!
+  }
+
+  type Alternative {
+    id: ID!
+    name: String!
+    score: Float!
+    reason: String!
+  }
+
+  type SupplyChainAnalysis {
+    productId: ID!
+    analysisType: String!
+    score: Float!
+    confidence: Float!
+    insights: [Insight!]!
+    recommendations: [Recommendation!]!
+  }
+
+  type Insight {
+    metric: String!
+    value: String!
+    impact: String!
+  }
+
+  type Recommendation {
+    type: String!
+    priority: String!
+    message: String!
+  }
+
+  type CognitiveRecommendation {
+    id: ID!
+    type: String!
+    name: String!
+    properties: NodeProperties
+    cognitiveScore: Float!
+    reasoning: [ReasoningEvidence!]!
+    confidence: Float!
+  }
+
+  type ReasoningEvidence {
+    rule: String!
+    impact: String!
+    reason: String!
+  }
+
+  type TrainingResult {
+    success: Boolean!
+    modelType: String!
+    message: String!
+    estimatedTime: Int!
+  }
+
+  type Rule {
+    id: ID!
+    name: String!
+    category: String!
+    active: Boolean!
+  }
+
+  type Knowledge {
+    id: ID!
+    type: String!
+    data: String!
+    updated: Boolean!
+  }
+
+  enum SupplyChainAnalysisType {
+    TRANSPARENCY
+    ETHICAL_SOURCING
+    SUSTAINABILITY
+    QUALITY_CHAIN
+    RISK_ASSESSMENT
+  }
+
+  enum ModelType {
+    RECOMMENDATION
+    SUPPLY_CHAIN
+    QUALITY_PREDICTION
+    DEMAND_FORECAST
+  }
   
   # Input types for queries
   
@@ -157,6 +280,13 @@ export const typeDefs = buildSchema(`
     # Organization queries
     organization(id: ID!): Organization
     organizations(limit: Int, offset: Int): [Organization!]!
+
+    # OpenCog cognitive queries
+    findPattern(pattern: String!, tenantId: String): [PatternMatch!]!
+    inferRelationships(nodeId: ID!, depth: Int, tenantId: String): [InferredRelationship!]!
+    cognitiveInsights(context: String!, tenantId: String): CognitiveInsights!
+    analyzeSupplyChain(productId: ID!, analysisType: SupplyChainAnalysisType!, tenantId: String): SupplyChainAnalysis
+    cognitiveRecommendations(userId: ID!, context: String!, tenantId: String): [CognitiveRecommendation!]!
   }
   
   # Mutations for data management
@@ -176,5 +306,10 @@ export const typeDefs = buildSchema(`
     # Organization management
     createOrganization(id: ID!, name: String!, type: String!): Organization!
     deleteOrganization(id: ID!): Boolean!
+
+    # OpenCog cognitive mutations
+    trainModel(modelType: ModelType!, tenantId: String): TrainingResult!
+    addReasoningRule(rule: String!, tenantId: String): Rule!
+    updateKnowledge(knowledge: String!, tenantId: String): Knowledge!
   }
 `);

@@ -1,4 +1,6 @@
 import dataService from './dataService.js';
+import knowledgeTransferService from './knowledgeTransferService.js';
+import persistenceService from './persistenceService.js';
 
 /**
  * OpenCogService - Cognitive architecture integration for Skin Zone marketplace
@@ -9,6 +11,8 @@ import dataService from './dataService.js';
  * - Probabilistic reasoning (PLN-inspired)
  * - Recommendation engine with cognitive reasoning
  * - Supply chain intelligence analysis
+ * - Cross-tenant knowledge transfer (federated learning)
+ * - Persistence with optional Redis support
  * 
  * Note: This is a Node.js implementation of OpenCog concepts.
  * For production, consider integrating with actual OpenCog framework via REST API or gRPC.
@@ -59,6 +63,10 @@ class OpenCogService {
     // Ensure data service is initialized
     await dataService.initialize();
     
+    // Initialize persistence and knowledge transfer services
+    await persistenceService.initialize();
+    knowledgeTransferService.initialize();
+    
     // Load shared knowledge from common entities
     await this._loadSharedKnowledge();
     
@@ -67,6 +75,9 @@ class OpenCogService {
     
     // Setup default tenant AtomSpaces
     this._initializeDefaultAtomSpace();
+    
+    // Try to restore AtomSpaces from persistence
+    await this._restorePersistedAtomSpaces();
     
     this.initialized = true;
     console.log('OpenCog Service initialized successfully');
@@ -1375,6 +1386,218 @@ class OpenCogService {
       }
     }
     return count;
+  }
+
+  /**
+   * Restore persisted AtomSpaces from storage
+   */
+  async _restorePersistedAtomSpaces() {
+    try {
+      const tenantIds = await persistenceService.listPersistedAtomSpaces();
+      console.log(`Found ${tenantIds.length} persisted AtomSpaces`);
+
+      for (const tenantId of tenantIds) {
+        if (!this.atomSpaces.has(tenantId)) {
+          const atomSpace = await persistenceService.loadAtomSpace(tenantId);
+          if (atomSpace) {
+            this.atomSpaces.set(tenantId, atomSpace);
+            console.log(`  ✓ Restored AtomSpace for tenant: ${tenantId}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to restore persisted AtomSpaces:', error.message);
+    }
+  }
+
+  /**
+   * Save AtomSpace to persistent storage
+   */
+  async persistAtomSpace(tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    return await persistenceService.saveAtomSpace(tenantId, atomSpace);
+  }
+
+  /**
+   * Save all AtomSpaces to persistent storage
+   */
+  async persistAllAtomSpaces() {
+    return await persistenceService.createSnapshot(this.atomSpaces);
+  }
+
+  /**
+   * Perform federated learning across tenants
+   */
+  async performFederatedLearning(tenantIds = null) {
+    // If no tenants specified, use all tenants
+    const participatingTenants = tenantIds || Array.from(this.atomSpaces.keys());
+    
+    return await knowledgeTransferService.performFederatedUpdate(
+      this.atomSpaces,
+      participatingTenants
+    );
+  }
+
+  /**
+   * Set knowledge transfer policy for a tenant
+   */
+  setTransferPolicy(tenantId, policy) {
+    knowledgeTransferService.setTransferPolicy(tenantId, policy);
+  }
+
+  /**
+   * Get comprehensive statistics including new services
+   */
+  getEnhancedStatistics() {
+    const baseStats = this.getStatistics();
+    const persistenceStats = persistenceService.getStatistics();
+    const transferStats = knowledgeTransferService.getStatistics();
+
+    return {
+      ...baseStats,
+      persistence: persistenceStats,
+      knowledgeTransfer: transferStats,
+      enhancedFeaturesEnabled: true
+    };
+  }
+
+  /**
+   * Advanced PLN reasoning with multi-step inference
+   */
+  async advancedReasoning(query, tenantId = 'default', options = {}) {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const maxDepth = options.maxDepth || 3;
+    const minConfidence = options.minConfidence || 0.6;
+    
+    const results = {
+      query,
+      steps: [],
+      conclusions: [],
+      confidence: 0
+    };
+
+    // Step 1: Pattern matching
+    const matches = await this.findPattern(query.pattern || {}, tenantId);
+    results.steps.push({
+      step: 1,
+      operation: 'pattern_matching',
+      matches: matches.length,
+      confidence: matches.length > 0 ? 0.9 : 0.1
+    });
+
+    // Step 2: Apply inference rules iteratively
+    let currentContext = { matches, depth: 0 };
+    while (currentContext.depth < maxDepth) {
+      const inferences = await this.applyInferenceRules(currentContext, tenantId);
+      
+      if (inferences.length === 0) break;
+      
+      // Filter by confidence threshold
+      const significantInferences = inferences.filter(
+        inf => inf.confidence >= minConfidence
+      );
+      
+      if (significantInferences.length === 0) break;
+      
+      results.steps.push({
+        step: currentContext.depth + 2,
+        operation: 'inference',
+        inferences: significantInferences.length,
+        avgConfidence: significantInferences.reduce(
+          (sum, inf) => sum + inf.confidence, 0
+        ) / significantInferences.length
+      });
+
+      // Accumulate conclusions
+      for (const inf of significantInferences) {
+        results.conclusions.push(...inf.conclusions);
+      }
+
+      currentContext.depth++;
+    }
+
+    // Calculate overall confidence
+    if (results.steps.length > 0) {
+      results.confidence = results.steps.reduce(
+        (sum, step) => sum + (step.confidence || step.avgConfidence || 0), 0
+      ) / results.steps.length;
+    }
+
+    return results;
+  }
+
+  /**
+   * Explain reasoning chain for a specific conclusion
+   */
+  explainReasoning(atomId, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const atom = atomSpace.atoms.get(atomId);
+    
+    if (!atom) {
+      return { error: 'Atom not found', atomId };
+    }
+
+    // Find all links connected to this atom
+    const relatedLinks = [];
+    for (const [linkId, link] of atomSpace.links.entries()) {
+      if (link.source === atomId || link.target === atomId) {
+        relatedLinks.push(link);
+      }
+    }
+
+    // Build reasoning chain
+    const reasoningChain = {
+      atom: this._atomToResult(atom),
+      truthValue: atom.truthValue,
+      attentionValue: atom.attentionValue,
+      relatedLinks: relatedLinks.map(link => ({
+        id: link.id,
+        type: link.type,
+        source: link.source,
+        target: link.target,
+        strength: link.strength
+      })),
+      inferredFrom: [],
+      supports: []
+    };
+
+    // Categorize links as evidence (incoming) or conclusions (outgoing)
+    for (const link of relatedLinks) {
+      if (link.target === atomId) {
+        reasoningChain.inferredFrom.push({
+          source: link.source,
+          type: link.type,
+          strength: link.strength
+        });
+      } else {
+        reasoningChain.supports.push({
+          target: link.target,
+          type: link.type,
+          strength: link.strength
+        });
+      }
+    }
+
+    return reasoningChain;
+  }
+
+  /**
+   * Get recommendations with explainable AI
+   */
+  async getExplainableRecommendations(userId, context, tenantId = 'default', options = {}) {
+    const recommendations = await this.recommendTreatments(userId, tenantId, options);
+    
+    // Add detailed explanations for each recommendation
+    const explainableResults = [];
+    for (const rec of recommendations) {
+      const explanation = this.explainReasoning(rec.id, tenantId);
+      explainableResults.push({
+        ...rec,
+        detailedExplanation: explanation
+      });
+    }
+
+    return explainableResults;
   }
 }
 

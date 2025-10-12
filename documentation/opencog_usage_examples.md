@@ -2,6 +2,8 @@
 
 This document provides practical examples for using the OpenCog-enhanced HyperGraphQL API in the Skin Zone marketplace.
 
+**Version 2.0 Enhanced** ✨ - Now includes persistence, federated learning, and advanced reasoning!
+
 ## Table of Contents
 
 1. [Basic Pattern Matching](#basic-pattern-matching)
@@ -698,12 +700,271 @@ console.log(`Query took ${metric.duration}ms`);
 
 ---
 
+## Enhanced Features (v2) - NEW! ✨
+
+### Example 15: Persistence - Save and Restore AtomSpace
+
+```graphql
+# Save current state
+mutation {
+  persistAtomSpace(tenantId: "my_spa") {
+    tenantId
+    timestamp
+    atomCount
+    linkCount
+  }
+}
+
+# Create full system snapshot
+mutation {
+  persistAllAtomSpaces {
+    snapshotId
+    timestamp
+    tenantCount
+    tenants {
+      tenantId
+      atomCount
+    }
+  }
+}
+```
+
+**Restoration is automatic on service restart!**
+
+### Example 16: Federated Learning - Share Knowledge Across Tenants
+
+```graphql
+# Step 1: Configure what can be shared
+mutation {
+  setTransferPolicy(
+    tenantId: "spa_luxury"
+    policy: "{
+      \"minConfidence\": 0.9,
+      \"minOccurrences\": 5,
+      \"excludePatterns\": [\"customer_*\", \"order_*\"],
+      \"allowedTypes\": [\"treatment\", \"ingredient\"]
+    }"
+  )
+}
+
+# Step 2: Perform federated learning
+mutation {
+  performFederatedLearning(
+    tenantIds: ["spa_luxury", "spa_wellness", "spa_organic"]
+  ) {
+    aggregatedPatterns
+    tenantUpdates
+    timestamp
+  }
+}
+```
+
+**Result:** Each spa benefits from patterns learned by others while maintaining privacy.
+
+### Example 17: Advanced Multi-Step Reasoning
+
+```graphql
+query {
+  advancedReasoning(
+    query: "{
+      \"pattern\": {
+        \"nodeType\": \"treatment\",
+        \"properties\": {\"category\": \"facial\"}
+      }
+    }"
+    tenantId: "beauty_clinic"
+    options: "{\"maxDepth\": 3, \"minConfidence\": 0.7}"
+  ) {
+    query
+    steps {
+      step
+      operation
+      matches
+      inferences
+      confidence
+    }
+    conclusions
+    confidence
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "steps": [
+    {
+      "step": 1,
+      "operation": "pattern_matching",
+      "matches": 12,
+      "confidence": 0.9
+    },
+    {
+      "step": 2,
+      "operation": "inference",
+      "inferences": 5,
+      "avgConfidence": 0.85
+    }
+  ],
+  "conclusions": [
+    "Facial treatments with organic ingredients show 20% higher satisfaction",
+    "Premium ingredients correlate with improved customer retention"
+  ],
+  "confidence": 0.875
+}
+```
+
+### Example 18: Explain Why a Recommendation Was Made
+
+```graphql
+query {
+  explainReasoning(
+    atomId: "treatment_hydrating_facial"
+    tenantId: "spa_wellness"
+  ) {
+    atom {
+      id
+      name
+      type
+    }
+    truthValue {
+      strength
+      confidence
+    }
+    inferredFrom {
+      source
+      type
+      strength
+    }
+    supports {
+      target
+      type
+      strength
+    }
+  }
+}
+```
+
+**Result:** Full reasoning chain showing why this treatment was recommended.
+
+### Example 19: Get Recommendations with Full Explanations
+
+```graphql
+query {
+  getExplainableRecommendations(
+    userId: "customer_jane_doe"
+    context: "{
+      \"skinType\": \"combination\",
+      \"concerns\": [\"anti-aging\", \"hydration\"],
+      \"budget\": \"premium\",
+      \"previousTreatments\": [\"basic_facial\"]
+    }"
+    tenantId: "luxury_spa"
+    options: "{\"limit\": 3}"
+  ) {
+    id
+    name
+    cognitiveScore
+    confidence
+    reasoning {
+      rule
+      impact
+      reason
+    }
+    detailedExplanation {
+      atom {
+        id
+        name
+      }
+      truthValue {
+        strength
+        confidence
+      }
+      inferredFrom {
+        source
+        type
+        strength
+      }
+    }
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "id": "treatment_premium_anti_aging",
+  "name": "Premium Anti-Aging Facial",
+  "cognitiveScore": 0.92,
+  "confidence": 0.88,
+  "reasoning": [
+    {
+      "rule": "customer_history_match",
+      "impact": 0.85,
+      "reason": "Customer previously enjoyed facial treatments"
+    },
+    {
+      "rule": "concern_alignment",
+      "impact": 0.95,
+      "reason": "Treatment directly addresses anti-aging concern"
+    }
+  ],
+  "detailedExplanation": {
+    "inferredFrom": [
+      {
+        "source": "customer_jane_doe",
+        "type": "HAS_CONCERN",
+        "strength": 0.9
+      },
+      {
+        "source": "ingredient_retinol",
+        "type": "ADDRESSES",
+        "strength": 0.95
+      }
+    ]
+  }
+}
+```
+
+### Example 20: Monitor Enhanced Statistics
+
+```graphql
+query {
+  getEnhancedStatistics {
+    # Core stats
+    atomCount
+    linkCount
+    rulesCount
+    
+    # Persistence
+    persistence {
+      redisAvailable
+      lastSnapshotTimes
+      persistenceDir
+    }
+    
+    # Knowledge transfer
+    knowledgeTransfer {
+      totalTransfers
+      successfulTransfers
+      sharedPatternsCount
+      activePolicies
+    }
+    
+    enhancedFeaturesEnabled
+  }
+}
+```
+
+---
+
 ## Next Steps
 
-1. Explore [Advanced Features Documentation](opencog_advanced_features.md)
-2. Review [Architecture Guide](../architecture/opencog_integration.md)
-3. Check [Implementation Summary](../OPENCOG_IMPLEMENTATION.md)
-4. Run test suite: `cd backend && npm test`
+1. Explore [Enhanced Features v2 Documentation](opencog_enhanced_features_v2.md) - NEW! ✨
+2. Review [Advanced Features Documentation](opencog_advanced_features.md)
+3. Check [Architecture Guide](../architecture/opencog_integration.md)
+4. Read [Implementation Summary](../OPENCOG_IMPLEMENTATION.md)
+5. Run test suite: `cd backend && npm test`
 
 ---
 

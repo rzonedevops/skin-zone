@@ -293,6 +293,12 @@ export const typeDefs = buildSchema(`
     applyInferenceRules(context: String!, tenantId: String): [InferenceResult!]!
     getHighAttentionAtoms(tenantId: String, limit: Int): [AttentionAtom!]!
     traverseHypergraph(startNodeId: ID!, options: String, tenantId: String): [HypergraphPath!]!
+    
+    # Enhanced OpenCog operations (v2)
+    advancedReasoning(query: String!, tenantId: String, options: String): AdvancedReasoningResult!
+    explainReasoning(atomId: ID!, tenantId: String): ReasoningExplanation!
+    getExplainableRecommendations(userId: ID!, context: String!, tenantId: String, options: String): [ExplainableRecommendation!]!
+    getEnhancedStatistics(tenantId: String): EnhancedStatistics!
     findComplexPattern(pattern: String!, tenantId: String): [PatternMatch!]!
     getLearningStatistics(tenantId: String): LearningStatistics!
   }
@@ -323,6 +329,12 @@ export const typeDefs = buildSchema(`
     # Advanced OpenCog mutations
     updateAttention(tenantId: String): [AttentionUpdate!]!
     learnFromInteraction(interaction: String!, tenantId: String): LearningResult!
+    
+    # Enhanced OpenCog mutations (v2)
+    persistAtomSpace(tenantId: String): PersistenceResult!
+    persistAllAtomSpaces: SnapshotResult!
+    performFederatedLearning(tenantIds: [String!]): FederatedLearningResult!
+    setTransferPolicy(tenantId: String!, policy: String!): Boolean!
   }
 
   # Advanced OpenCog types
@@ -368,5 +380,113 @@ export const typeDefs = buildSchema(`
     learned: Boolean!
     affectedAtoms: [String!]!
     confidence: Float!
+  }
+
+  # Enhanced OpenCog types (v2)
+  
+  type AdvancedReasoningResult {
+    query: String!
+    steps: [ReasoningStepDetail!]!
+    conclusions: [String!]!
+    confidence: Float!
+  }
+
+  type ReasoningStepDetail {
+    step: Int!
+    operation: String!
+    matches: Int
+    inferences: Int
+    confidence: Float
+    avgConfidence: Float
+  }
+
+  type ReasoningExplanation {
+    atom: PatternMatch!
+    truthValue: TruthValue!
+    attentionValue: AttentionValue!
+    relatedLinks: [RelatedLink!]!
+    inferredFrom: [InferenceSource!]!
+    supports: [InferenceTarget!]!
+  }
+
+  type RelatedLink {
+    id: ID!
+    type: String!
+    source: ID!
+    target: ID!
+    strength: Float!
+  }
+
+  type InferenceSource {
+    source: ID!
+    type: String!
+    strength: Float!
+  }
+
+  type InferenceTarget {
+    target: ID!
+    type: String!
+    strength: Float!
+  }
+
+  type ExplainableRecommendation {
+    id: ID!
+    name: String!
+    type: String!
+    cognitiveScore: Float!
+    confidence: Float!
+    reasoning: [ReasoningDetail!]!
+    detailedExplanation: ReasoningExplanation!
+  }
+
+  type ReasoningDetail {
+    rule: String!
+    impact: Float!
+    reason: String!
+  }
+
+  type EnhancedStatistics {
+    atomCount: Int!
+    linkCount: Int!
+    sharedKnowledgeSize: Int!
+    cacheSize: Int!
+    rulesCount: Int!
+    persistence: PersistenceStats!
+    knowledgeTransfer: KnowledgeTransferStats!
+    enhancedFeaturesEnabled: Boolean!
+  }
+
+  type PersistenceStats {
+    redisAvailable: Boolean!
+    lastSnapshotTimes: String!
+    persistenceDir: String!
+  }
+
+  type KnowledgeTransferStats {
+    totalTransfers: Int!
+    successfulTransfers: Int!
+    failedTransfers: Int!
+    sharedPatternsCount: Int!
+    activePolicies: Int!
+  }
+
+  type PersistenceResult {
+    tenantId: String!
+    timestamp: Float!
+    atomCount: Int!
+    linkCount: Int!
+  }
+
+  type SnapshotResult {
+    snapshotId: String!
+    timestamp: Float!
+    tenantCount: Int!
+    tenants: [PersistenceResult!]!
+  }
+
+  type FederatedLearningResult {
+    aggregatedPatterns: Int!
+    tenantUpdates: String!
+    timestamp: Float!
   }
 `);

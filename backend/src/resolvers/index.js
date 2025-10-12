@@ -248,5 +248,44 @@ export const resolvers = {
 
   getLearningStatistics: async ({ tenantId }) => {
     return openCogService.getLearningStatistics(tenantId);
+  },
+
+  // Enhanced OpenCog operations (v2)
+  advancedReasoning: async ({ query, tenantId, options }) => {
+    const parsedQuery = JSON.parse(query);
+    const parsedOptions = options ? JSON.parse(options) : {};
+    return await openCogService.advancedReasoning(parsedQuery, tenantId, parsedOptions);
+  },
+
+  explainReasoning: async ({ atomId, tenantId }) => {
+    return openCogService.explainReasoning(atomId, tenantId);
+  },
+
+  getExplainableRecommendations: async ({ userId, context, tenantId, options }) => {
+    const parsedOptions = options ? JSON.parse(options) : {};
+    return await openCogService.getExplainableRecommendations(userId, context, tenantId, parsedOptions);
+  },
+
+  getEnhancedStatistics: async ({ tenantId }) => {
+    return openCogService.getEnhancedStatistics();
+  },
+
+  // Enhanced OpenCog mutations (v2)
+  persistAtomSpace: async ({ tenantId }) => {
+    return await openCogService.persistAtomSpace(tenantId);
+  },
+
+  persistAllAtomSpaces: async () => {
+    return await openCogService.persistAllAtomSpaces();
+  },
+
+  performFederatedLearning: async ({ tenantIds }) => {
+    return await openCogService.performFederatedLearning(tenantIds);
+  },
+
+  setTransferPolicy: async ({ tenantId, policy }) => {
+    const parsedPolicy = JSON.parse(policy);
+    openCogService.setTransferPolicy(tenantId, parsedPolicy);
+    return true;
   }
 };

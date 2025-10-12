@@ -287,6 +287,14 @@ export const typeDefs = buildSchema(`
     cognitiveInsights(context: String!, tenantId: String): CognitiveInsights!
     analyzeSupplyChain(productId: ID!, analysisType: SupplyChainAnalysisType!, tenantId: String): SupplyChainAnalysis
     cognitiveRecommendations(userId: ID!, context: String!, tenantId: String): [CognitiveRecommendation!]!
+
+    # Advanced OpenCog operations
+    bindPattern(bindLink: String!, tenantId: String): [BindResult!]!
+    applyInferenceRules(context: String!, tenantId: String): [InferenceResult!]!
+    getHighAttentionAtoms(tenantId: String, limit: Int): [AttentionAtom!]!
+    traverseHypergraph(startNodeId: ID!, options: String, tenantId: String): [HypergraphPath!]!
+    findComplexPattern(pattern: String!, tenantId: String): [PatternMatch!]!
+    getLearningStatistics(tenantId: String): LearningStatistics!
   }
   
   # Mutations for data management
@@ -311,5 +319,54 @@ export const typeDefs = buildSchema(`
     trainModel(modelType: ModelType!, tenantId: String): TrainingResult!
     addReasoningRule(rule: String!, tenantId: String): Rule!
     updateKnowledge(knowledge: String!, tenantId: String): Knowledge!
+
+    # Advanced OpenCog mutations
+    updateAttention(tenantId: String): [AttentionUpdate!]!
+    learnFromInteraction(interaction: String!, tenantId: String): LearningResult!
+  }
+
+  # Advanced OpenCog types
+  
+  type BindResult {
+    bindings: String!
+    matches: [PatternMatch!]!
+  }
+
+  type InferenceResult {
+    rule: String!
+    description: String!
+    confidence: Float!
+    newAtoms: [Node!]!
+    conclusions: [String!]!
+  }
+
+  type AttentionAtom {
+    atom: PatternMatch!
+    attention: Float!
+  }
+
+  type AttentionUpdate {
+    atomId: ID!
+    attentionValue: Float!
+  }
+
+  type HypergraphPath {
+    length: Int!
+    nodes: [Node!]!
+    score: Float!
+  }
+
+  type LearningStatistics {
+    totalInteractions: Int!
+    interactionTypes: String!
+    averageTruthValue: Float!
+    highConfidenceAtoms: Int!
+    recentLearning: String!
+  }
+
+  type LearningResult {
+    learned: Boolean!
+    affectedAtoms: [String!]!
+    confidence: Float!
   }
 `);

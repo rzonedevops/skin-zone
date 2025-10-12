@@ -205,5 +205,48 @@ export const resolvers = {
       ...parsedKnowledge,
       updated: true
     };
+  },
+
+  // Advanced OpenCog operations
+  bindPattern: async ({ bindLink, tenantId }) => {
+    const parsedBindLink = JSON.parse(bindLink);
+    return await openCogService.bindPattern(parsedBindLink, tenantId);
+  },
+
+  applyInferenceRules: async ({ context, tenantId }) => {
+    const parsedContext = JSON.parse(context);
+    return await openCogService.applyInferenceRules(parsedContext, tenantId);
+  },
+
+  updateAttention: async ({ tenantId }) => {
+    const attentionMap = openCogService.updateAttention(tenantId);
+    // Convert Map to array for GraphQL
+    return Array.from(attentionMap.entries()).map(([atomId, value]) => ({
+      atomId,
+      attentionValue: value
+    }));
+  },
+
+  getHighAttentionAtoms: async ({ tenantId, limit = 10 }) => {
+    return openCogService.getHighAttentionAtoms(tenantId, limit);
+  },
+
+  learnFromInteraction: async ({ interaction, tenantId }) => {
+    const parsedInteraction = JSON.parse(interaction);
+    return await openCogService.learnFromInteraction(parsedInteraction, tenantId);
+  },
+
+  traverseHypergraph: async ({ startNodeId, options, tenantId }) => {
+    const parsedOptions = options ? JSON.parse(options) : {};
+    return await openCogService.traverseHypergraph(startNodeId, parsedOptions, tenantId);
+  },
+
+  findComplexPattern: async ({ pattern, tenantId }) => {
+    const parsedPattern = JSON.parse(pattern);
+    return await openCogService.findComplexPattern(parsedPattern, tenantId);
+  },
+
+  getLearningStatistics: async ({ tenantId }) => {
+    return openCogService.getLearningStatistics(tenantId);
   }
 };

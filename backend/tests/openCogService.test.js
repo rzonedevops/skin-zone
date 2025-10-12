@@ -285,4 +285,183 @@ describe('OpenCogService', () => {
       assert.ok(Array.isArray(insights.alternatives), 'Should have alternatives array');
     });
   });
+
+  describe('Advanced Pattern Matching', () => {
+    it('should perform bind pattern matching with variables', async () => {
+      await openCogService.initialize();
+      
+      const bindLink = {
+        variables: [],
+        pattern: {
+          nodeType: 'ingredient',
+          conditions: []
+        },
+        result: {}
+      };
+      
+      const results = await openCogService.bindPattern(bindLink);
+      assert.ok(Array.isArray(results), 'Should return array of results');
+    });
+
+    it('should find complex patterns with AND logic', async () => {
+      await openCogService.initialize();
+      
+      const pattern = {
+        and: [
+          { nodeType: 'ingredient' },
+          { properties: { category: { $exists: true } } }
+        ]
+      };
+      
+      const results = await openCogService.findComplexPattern(pattern);
+      assert.ok(Array.isArray(results), 'Should return array of results');
+    });
+
+    it('should find complex patterns with OR logic', async () => {
+      await openCogService.initialize();
+      
+      const pattern = {
+        or: [
+          { nodeType: 'ingredient' },
+          { nodeType: 'product' }
+        ]
+      };
+      
+      const results = await openCogService.findComplexPattern(pattern);
+      assert.ok(Array.isArray(results), 'Should return array of results');
+      assert.ok(results.length > 0, 'Should find matching atoms');
+    });
+  });
+
+  describe('URE (Unified Rule Engine)', () => {
+    it('should add URE inference rules', async () => {
+      await openCogService.initialize();
+      
+      openCogService.addURERRule({
+        id: 'test-inference',
+        description: 'Test inference rule',
+        condition: (context, atomSpace) => true,
+        action: (context, atomSpace) => ({
+          newAtoms: [],
+          conclusions: ['Test conclusion']
+        }),
+        confidence: 0.9
+      });
+      
+      assert.strictEqual(openCogService.ureRules.length, 1, 'Should have one URE rule');
+    });
+
+    it('should apply inference rules', async () => {
+      await openCogService.initialize();
+      
+      openCogService.addURERRule({
+        id: 'ingredient-quality-inference',
+        description: 'Infer product quality from ingredient quality',
+        condition: (context) => context.type === 'quality-inference',
+        action: (context) => ({
+          newAtoms: [],
+          conclusions: ['High quality ingredients suggest high quality product']
+        }),
+        confidence: 0.85
+      });
+      
+      const context = { type: 'quality-inference' };
+      const inferences = await openCogService.applyInferenceRules(context);
+      
+      assert.ok(Array.isArray(inferences), 'Should return inferences');
+      assert.ok(inferences.length > 0, 'Should have at least one inference');
+    });
+  });
+
+  describe('ECAN (Attention Allocation)', () => {
+    it('should update attention values', async () => {
+      await openCogService.initialize();
+      
+      const attentionMap = openCogService.updateAttention('default');
+      
+      assert.ok(attentionMap instanceof Map, 'Should return a Map');
+      assert.ok(attentionMap.size > 0, 'Should have attention values');
+    });
+
+    it('should get high attention atoms', async () => {
+      await openCogService.initialize();
+      openCogService.updateAttention('default');
+      
+      const highAttention = openCogService.getHighAttentionAtoms('default', 5);
+      
+      assert.ok(Array.isArray(highAttention), 'Should return array');
+      assert.ok(highAttention.length > 0, 'Should have high attention atoms');
+      assert.ok(highAttention[0].atom, 'Should have atom data');
+      assert.ok(highAttention[0].attention !== undefined, 'Should have attention value');
+    });
+  });
+
+  describe('Incremental Learning', () => {
+    it('should learn from recommendation feedback', async () => {
+      await openCogService.initialize();
+      await dataService.initialize();
+      
+      const products = dataService.getNodes({ type: 'product' });
+      if (products.length > 0) {
+        const interaction = {
+          type: 'recommendation-feedback',
+          data: {
+            userId: 'customer_1',
+            itemId: products[0].id,
+            rating: 0.9,
+            feedback: 'positive'
+          }
+        };
+        
+        const result = await openCogService.learnFromInteraction(interaction);
+        
+        assert.strictEqual(result.learned, true, 'Should indicate learning occurred');
+        assert.ok(result.confidence, 'Should have confidence value');
+      }
+    });
+
+    it('should track learning statistics', async () => {
+      await openCogService.initialize();
+      
+      const stats = openCogService.getLearningStatistics('default');
+      
+      assert.ok(stats.totalInteractions !== undefined, 'Should have interaction count');
+      assert.ok(stats.averageTruthValue !== undefined, 'Should have average truth value');
+      assert.ok(stats.highConfidenceAtoms !== undefined, 'Should have high confidence count');
+    });
+  });
+
+  describe('Hypergraph Traversal', () => {
+    it('should traverse hypergraph from start node', async () => {
+      await openCogService.initialize();
+      await dataService.initialize();
+      
+      const nodes = dataService.getNodes();
+      if (nodes.length > 0) {
+        const paths = await openCogService.traverseHypergraph(nodes[0].id, { maxDepth: 2 });
+        
+        assert.ok(Array.isArray(paths), 'Should return array of paths');
+        if (paths.length > 0) {
+          assert.ok(paths[0].length !== undefined, 'Path should have length');
+          assert.ok(Array.isArray(paths[0].nodes), 'Path should have nodes');
+          assert.ok(paths[0].score !== undefined, 'Path should have score');
+        }
+      }
+    });
+
+    it('should filter traversal by relation types', async () => {
+      await openCogService.initialize();
+      await dataService.initialize();
+      
+      const nodes = dataService.getNodes();
+      if (nodes.length > 0) {
+        const paths = await openCogService.traverseHypergraph(
+          nodes[0].id, 
+          { maxDepth: 2, relationTypes: ['CONTAINS', 'SUPPLIES'] }
+        );
+        
+        assert.ok(Array.isArray(paths), 'Should return filtered paths');
+      }
+    });
+  });
 });

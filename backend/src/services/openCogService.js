@@ -35,6 +35,15 @@ class OpenCogService {
       business: [],
       recommendations: []
     };
+
+    // URE (Unified Rule Engine) rules for inference
+    this.ureRules = [];
+
+    // Attention allocation tracking (ECAN)
+    this.attentionFocus = new Map(); // Track important atoms per tenant
+    
+    // Learning history for incremental updates
+    this.learningHistory = new Map();
     
     this.initialized = false;
   }
@@ -868,6 +877,504 @@ class OpenCogService {
    */
   clearCache() {
     this.patternCache.clear();
+  }
+
+  /**
+   * Advanced pattern matching with variable bindings
+   * Supports OpenCog-style BindLink queries
+   */
+  async bindPattern(bindLink, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const results = [];
+
+    // Extract variable list and pattern
+    const variables = bindLink.variables || [];
+    const pattern = bindLink.pattern || {};
+    const resultTemplate = bindLink.result || {};
+
+    // Find all atoms matching the pattern
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      const bindings = this._matchPatternWithBindings(atom, pattern, atomSpace);
+      if (bindings) {
+        // Apply result template with bindings
+        const result = this._applyBindings(resultTemplate, bindings, atomSpace);
+        results.push(result);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Match pattern and extract variable bindings
+   */
+  _matchPatternWithBindings(atom, pattern, atomSpace) {
+    const bindings = {};
+
+    // Match node type
+    if (pattern.nodeType && atom.data.type !== pattern.nodeType) {
+      return null;
+    }
+
+    // Extract variable bindings
+    if (pattern.variables) {
+      for (const [varName, varPattern] of Object.entries(pattern.variables)) {
+        if (varPattern.property) {
+          const value = atom.data.properties?.[varPattern.property];
+          if (value) {
+            bindings[varName] = value;
+          } else if (varPattern.required !== false) {
+            return null; // Required variable not found
+          }
+        }
+      }
+    }
+
+    // Match conditions
+    if (pattern.conditions) {
+      for (const condition of pattern.conditions) {
+        if (!this._evaluateCondition(atom, condition, bindings, atomSpace)) {
+          return null;
+        }
+      }
+    }
+
+    return bindings;
+  }
+
+  /**
+   * Evaluate a condition in pattern matching
+   */
+  _evaluateCondition(atom, condition, bindings, atomSpace) {
+    if (condition.type === 'greaterThan') {
+      const value = this._resolveValue(condition.left, atom, bindings);
+      const threshold = this._resolveValue(condition.right, atom, bindings);
+      return value > threshold;
+    } else if (condition.type === 'equals') {
+      const left = this._resolveValue(condition.left, atom, bindings);
+      const right = this._resolveValue(condition.right, atom, bindings);
+      return left === right;
+    } else if (condition.type === 'contains') {
+      const array = this._resolveValue(condition.array, atom, bindings);
+      const value = this._resolveValue(condition.value, atom, bindings);
+      return Array.isArray(array) && array.includes(value);
+    }
+    return true;
+  }
+
+  /**
+   * Resolve a value from atom, bindings, or literal
+   */
+  _resolveValue(valueSpec, atom, bindings) {
+    if (typeof valueSpec === 'object' && valueSpec.variable) {
+      return bindings[valueSpec.variable];
+    } else if (typeof valueSpec === 'object' && valueSpec.property) {
+      return atom.data.properties?.[valueSpec.property];
+    }
+    return valueSpec; // Literal value
+  }
+
+  /**
+   * Apply variable bindings to result template
+   */
+  _applyBindings(template, bindings, atomSpace) {
+    const result = {};
+    for (const [key, value] of Object.entries(template)) {
+      if (typeof value === 'object' && value.variable) {
+        result[key] = bindings[value.variable];
+      } else if (typeof value === 'object' && value.atom) {
+        // Resolve atom by ID from bindings
+        const atomId = bindings[value.atom];
+        const atom = atomSpace.atoms.get(atomId);
+        result[key] = atom ? this._atomToResult(atom) : null;
+      } else {
+        result[key] = value;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * URE (Unified Rule Engine) - Apply inference rules
+   */
+  async applyInferenceRules(context, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const inferences = [];
+
+    // Apply each URE rule
+    for (const rule of this.ureRules) {
+      if (this._ruleApplies(rule, context, atomSpace)) {
+        const inference = await this._executeRule(rule, context, atomSpace);
+        if (inference) {
+          inferences.push(inference);
+          
+          // Add inferred atoms to AtomSpace
+          if (inference.newAtoms) {
+            for (const atom of inference.newAtoms) {
+              this._addAtomToSpace(atomSpace, atom);
+            }
+          }
+        }
+      }
+    }
+
+    return inferences;
+  }
+
+  /**
+   * Check if a URE rule applies to the current context
+   */
+  _ruleApplies(rule, context, atomSpace) {
+    if (!rule.condition) return true;
+    
+    try {
+      return rule.condition(context, atomSpace);
+    } catch (error) {
+      console.error(`Error evaluating rule ${rule.id}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Execute a URE rule and generate inference
+   */
+  async _executeRule(rule, context, atomSpace) {
+    try {
+      const result = await rule.action(context, atomSpace);
+      return {
+        rule: rule.id,
+        description: rule.description,
+        confidence: rule.confidence || 0.8,
+        newAtoms: result.newAtoms || [],
+        conclusions: result.conclusions || []
+      };
+    } catch (error) {
+      console.error(`Error executing rule ${rule.id}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Add a URE rule for inference
+   */
+  addURERRule(rule) {
+    this.ureRules.push({
+      id: rule.id || `ure_rule_${this.ureRules.length}`,
+      description: rule.description || 'Custom inference rule',
+      condition: rule.condition, // Function that checks if rule applies
+      action: rule.action, // Function that generates inference
+      confidence: rule.confidence || 0.8,
+      priority: rule.priority || 5
+    });
+  }
+
+  /**
+   * ECAN (Economic Attention Networks) - Allocate attention to important atoms
+   */
+  updateAttention(tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const attentionMap = new Map();
+
+    // Calculate importance based on usage and connections
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      let importance = atom.attentionValue.sti;
+
+      // Increase attention for highly connected nodes
+      const connections = this._getAtomConnections(id, atomSpace);
+      importance += connections.length * 10;
+
+      // Decay old attention
+      const age = Date.now() - atom.created;
+      const ageDecay = Math.max(0, 1 - (age / (30 * 24 * 60 * 60 * 1000))); // 30 day decay
+      importance *= ageDecay;
+
+      attentionMap.set(id, importance);
+      
+      // Update attention value
+      atom.attentionValue.sti = Math.floor(importance);
+    }
+
+    this.attentionFocus.set(tenantId, attentionMap);
+    return attentionMap;
+  }
+
+  /**
+   * Get connections for an atom
+   */
+  _getAtomConnections(atomId, atomSpace) {
+    const connections = [];
+    for (const [linkId, link] of atomSpace.links.entries()) {
+      if (link.outgoing.includes(atomId)) {
+        connections.push(link);
+      }
+    }
+    return connections;
+  }
+
+  /**
+   * Get atoms with highest attention values
+   */
+  getHighAttentionAtoms(tenantId = 'default', limit = 10) {
+    const attentionMap = this.attentionFocus.get(tenantId) || new Map();
+    const atomSpace = this._getAtomSpace(tenantId);
+
+    // Sort by attention value
+    const sorted = Array.from(attentionMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit);
+
+    return sorted.map(([id, attention]) => ({
+      atom: this._atomToResult(atomSpace.atoms.get(id)),
+      attention
+    }));
+  }
+
+  /**
+   * Incremental learning - Update knowledge from interactions
+   */
+  async learnFromInteraction(interaction, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    
+    // Record interaction in learning history
+    if (!this.learningHistory.has(tenantId)) {
+      this.learningHistory.set(tenantId, []);
+    }
+    this.learningHistory.get(tenantId).push({
+      timestamp: Date.now(),
+      type: interaction.type,
+      data: interaction.data
+    });
+
+    // Update truth values based on interaction
+    if (interaction.type === 'recommendation-feedback') {
+      await this._updateRecommendationModel(interaction, atomSpace);
+    } else if (interaction.type === 'product-rating') {
+      await this._updateProductRating(interaction, atomSpace);
+    } else if (interaction.type === 'supplier-verification') {
+      await this._updateSupplierTrustValue(interaction, atomSpace);
+    }
+
+    return {
+      learned: true,
+      affectedAtoms: interaction.affectedAtoms || [],
+      confidence: interaction.confidence || 0.7
+    };
+  }
+
+  /**
+   * Update recommendation model based on feedback
+   */
+  async _updateRecommendationModel(interaction, atomSpace) {
+    const { userId, itemId, rating, feedback } = interaction.data;
+    
+    const atom = atomSpace.atoms.get(itemId);
+    if (atom) {
+      // Update truth value based on positive/negative feedback
+      const currentTruth = atom.truthValue.strength;
+      const adjustment = (rating - 0.5) * 0.1; // rating 0-1, adjust by ±0.1
+      atom.truthValue.strength = Math.max(0, Math.min(1, currentTruth + adjustment));
+      atom.truthValue.confidence = Math.min(1, atom.truthValue.confidence + 0.05);
+      
+      // Update attention
+      atom.attentionValue.sti += rating > 0.5 ? 20 : -10;
+    }
+  }
+
+  /**
+   * Update product rating in AtomSpace
+   */
+  async _updateProductRating(interaction, atomSpace) {
+    const { productId, rating } = interaction.data;
+    
+    const atom = atomSpace.atoms.get(productId);
+    if (atom && atom.data.properties) {
+      // Update rating with moving average
+      const currentRating = atom.data.properties.rating || 0;
+      const count = atom.data.properties.ratingCount || 0;
+      const newRating = (currentRating * count + rating) / (count + 1);
+      
+      atom.data.properties.rating = newRating;
+      atom.data.properties.ratingCount = count + 1;
+    }
+  }
+
+  /**
+   * Update supplier trust value
+   */
+  async _updateSupplierTrustValue(interaction, atomSpace) {
+    const { supplierId, verified, certifications } = interaction.data;
+    
+    const atom = atomSpace.atoms.get(supplierId);
+    if (atom) {
+      atom.truthValue.strength = verified ? 0.95 : 0.5;
+      atom.truthValue.confidence = certifications?.length > 0 ? 0.9 : 0.6;
+    }
+  }
+
+  /**
+   * Hypergraph traversal - Navigate through multi-hop relationships
+   */
+  async traverseHypergraph(startNodeId, options = {}, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const maxDepth = options.maxDepth || 3;
+    const relationTypes = options.relationTypes || null; // Filter by specific types
+    const visited = new Set();
+    const paths = [];
+
+    const traverse = (nodeId, currentPath, depth) => {
+      if (depth > maxDepth || visited.has(nodeId)) {
+        return;
+      }
+
+      visited.add(nodeId);
+      currentPath.push(nodeId);
+
+      // Get all links connected to this node
+      const links = this._getAtomConnections(nodeId, atomSpace);
+      
+      if (links.length === 0 || depth === maxDepth) {
+        // Leaf node or max depth reached
+        paths.push([...currentPath]);
+      } else {
+        for (const link of links) {
+          // Check if relation type filter applies
+          if (relationTypes && !relationTypes.includes(link.predicate)) {
+            continue;
+          }
+
+          // Traverse to connected nodes
+          for (const connectedId of link.outgoing) {
+            if (connectedId !== nodeId) {
+              traverse(connectedId, [...currentPath], depth + 1);
+            }
+          }
+        }
+      }
+    };
+
+    traverse(startNodeId, [], 0);
+
+    // Convert paths to rich results
+    return paths.map(path => ({
+      length: path.length,
+      nodes: path.map(id => {
+        const atom = atomSpace.atoms.get(id);
+        return atom ? this._atomToResult(atom) : null;
+      }).filter(n => n !== null),
+      score: this._calculatePathScore(path, atomSpace)
+    }));
+  }
+
+  /**
+   * Calculate relevance score for a path
+   */
+  _calculatePathScore(path, atomSpace) {
+    let score = 1.0;
+    
+    // Penalize longer paths
+    score -= (path.length - 1) * 0.1;
+    
+    // Boost based on attention values
+    for (const nodeId of path) {
+      const atom = atomSpace.atoms.get(nodeId);
+      if (atom) {
+        const attentionBoost = atom.attentionValue.sti / 1000;
+        score += attentionBoost;
+      }
+    }
+    
+    return Math.max(0, Math.min(1, score));
+  }
+
+  /**
+   * Find complex patterns with multiple conditions
+   */
+  async findComplexPattern(patternSpec, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const results = [];
+
+    // Support for AND/OR/NOT logical combinations
+    if (patternSpec.and) {
+      // All conditions must match
+      for (const [id, atom] of atomSpace.atoms.entries()) {
+        if (patternSpec.and.every(subPattern => 
+          this._matchesPattern(atom, subPattern))) {
+          results.push(this._atomToResult(atom));
+        }
+      }
+    } else if (patternSpec.or) {
+      // At least one condition must match
+      for (const [id, atom] of atomSpace.atoms.entries()) {
+        if (patternSpec.or.some(subPattern => 
+          this._matchesPattern(atom, subPattern))) {
+          results.push(this._atomToResult(atom));
+        }
+      }
+    } else if (patternSpec.not) {
+      // Must not match the pattern
+      for (const [id, atom] of atomSpace.atoms.entries()) {
+        if (!this._matchesPattern(atom, patternSpec.not)) {
+          results.push(this._atomToResult(atom));
+        }
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Get learning statistics
+   */
+  getLearningStatistics(tenantId = 'default') {
+    const history = this.learningHistory.get(tenantId) || [];
+    const atomSpace = this._getAtomSpace(tenantId);
+    
+    return {
+      totalInteractions: history.length,
+      interactionTypes: this._countInteractionTypes(history),
+      averageTruthValue: this._calculateAverageTruthValue(atomSpace),
+      highConfidenceAtoms: this._countHighConfidenceAtoms(atomSpace),
+      recentLearning: history.slice(-10)
+    };
+  }
+
+  /**
+   * Count interaction types
+   */
+  _countInteractionTypes(history) {
+    const counts = {};
+    for (const interaction of history) {
+      counts[interaction.type] = (counts[interaction.type] || 0) + 1;
+    }
+    return counts;
+  }
+
+  /**
+   * Calculate average truth value across all atoms
+   */
+  _calculateAverageTruthValue(atomSpace) {
+    let sum = 0;
+    let count = 0;
+    
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      sum += atom.truthValue.strength;
+      count++;
+    }
+    
+    return count > 0 ? sum / count : 0;
+  }
+
+  /**
+   * Count high confidence atoms
+   */
+  _countHighConfidenceAtoms(atomSpace) {
+    let count = 0;
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      if (atom.truthValue.confidence > 0.8) {
+        count++;
+      }
+    }
+    return count;
   }
 }
 

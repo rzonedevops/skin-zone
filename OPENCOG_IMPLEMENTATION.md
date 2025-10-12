@@ -222,11 +222,52 @@ const ingredient = openCogService.sharedKnowledge.atoms.get('hyaluronic_acid');
 4. **Incremental Updates**: Delta updates instead of full reloads
 5. **Memory Limits**: Per-tenant memory constraints
 
+## Advanced Features
+
+The OpenCog implementation has been extended with sophisticated cognitive capabilities:
+
+### 1. Advanced Pattern Matching
+- **BindLink Pattern Matching**: Variable bindings and complex pattern queries
+- **Logical Combinations**: AND, OR, NOT operations for precise queries
+- **Condition Evaluation**: Support for comparisons (>, <, ==, contains)
+
+### 2. Unified Rule Engine (URE)
+- **Custom Inference Rules**: Add domain-specific reasoning rules
+- **Automated Inference**: Generate new knowledge from existing atoms
+- **Rule Priority System**: Control rule execution order
+- **Confidence Tracking**: Track inference reliability
+
+### 3. Economic Attention Networks (ECAN)
+- **Attention Allocation**: Prioritize important atoms dynamically
+- **STI/LTI/VLTI Values**: Short/long/very-long term importance tracking
+- **Decay Mechanism**: Automatic attention decay over time
+- **High-Attention Queries**: Quick access to trending/important atoms
+
+### 4. Incremental Learning
+- **Feedback Processing**: Learn from user interactions
+- **Truth Value Updates**: Adjust confidence based on outcomes
+- **Multiple Learning Modes**: Recommendations, ratings, verifications
+- **Learning Statistics**: Track learning progress and effectiveness
+
+### 5. Hypergraph Traversal
+- **Multi-hop Navigation**: Explore complex relationship paths
+- **Relation Filtering**: Filter by specific relationship types
+- **Path Scoring**: Automatic relevance scoring for paths
+- **Influence Analysis**: Discover indirect relationships
+
+### 6. Performance Benchmarking
+- **Operation Timing**: Measure execution time and memory usage
+- **Statistical Analysis**: p50, p95, p99 latencies
+- **Throughput Metrics**: Operations per second
+- **Performance Suites**: Comprehensive benchmarking tools
+
+**Documentation**: See [OpenCog Advanced Features](documentation/opencog_advanced_features.md) for detailed usage examples.
+
 ## Testing
 
 ### Test Coverage
 
-- **19 OpenCog tests** covering:
+- **43 OpenCog tests** covering:
   - Initialization and setup
   - Pattern matching functionality
   - Cognitive reasoning
@@ -235,26 +276,34 @@ const ingredient = openCogService.sharedKnowledge.atoms.get('hyaluronic_acid');
   - Multi-tenant isolation
   - Statistics and monitoring
   - Cognitive insights generation
+  - Advanced pattern matching (BindLink, complex patterns)
+  - URE inference rules
+  - ECAN attention allocation
+  - Incremental learning
+  - Hypergraph traversal
+  - Performance benchmarking
 
 ### Test Results
 
 ```
-✔ OpenCogService (12.898749ms)
-  ✔ Initialization (6.219772ms)
-    ✔ should initialize OpenCog service
-    ✔ should load shared knowledge
-    ✔ should initialize default AtomSpace
-    ✔ should load reasoning rules
-  ✔ Pattern Matching (1.293471ms)
-  ✔ Cognitive Reasoning (0.384497ms)
-  ✔ Cognitive Recommendations (0.754396ms)
-  ✔ Supply Chain Analysis (1.035159ms)
-  ✔ Multi-Tenant Support (0.647316ms)
-  ✔ Statistics and Monitoring (0.898434ms)
-  ✔ Cognitive Insights (0.491306ms)
+✔ OpenCogService
+  ✔ Initialization
+  ✔ Pattern Matching
+  ✔ Cognitive Reasoning
+  ✔ Cognitive Recommendations
+  ✔ Supply Chain Analysis
+  ✔ Multi-Tenant Support
+  ✔ Statistics and Monitoring
+  ✔ Cognitive Insights
+  ✔ Advanced Pattern Matching
+  ✔ URE (Unified Rule Engine)
+  ✔ ECAN (Attention Allocation)
+  ✔ Incremental Learning
+  ✔ Hypergraph Traversal
+✔ Performance Benchmarks
 ```
 
-All 32 tests passing (13 existing + 19 new).
+All 43 tests passing.
 
 ## Usage Examples
 

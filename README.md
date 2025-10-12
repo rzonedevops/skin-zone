@@ -52,7 +52,11 @@ A comprehensive architecture for a multi-tenant beauty marketplace platform that
 
 1. **Multi-tenant Architecture** - Supporting different brands and salons
 2. **HyperGraphQL API** - GraphQL and REST API for org-aware hypergraph queries
-3. **OpenCog Cognitive AI** - Advanced reasoning, learning, and decision-making capabilities
+3. **OpenCog Cognitive AI v2** ✨ - Advanced reasoning, learning, and decision-making with:
+   - **Persistence Service** - AtomSpace persistence with optional Redis
+   - **Federated Learning** - Privacy-preserving cross-tenant knowledge transfer
+   - **Advanced Reasoning** - Multi-step inference with explainability
+   - **Enhanced Statistics** - Comprehensive monitoring and analytics
 4. **Supply Chain Tracing** - Track products through ingredients to suppliers with cognitive analysis
 5. **Hypergraph Navigation** - Path finding and graph traversal capabilities
 6. **GitHub Integration** - Map repo folder structure to hypergraph entities
@@ -110,7 +114,9 @@ The frontend will be available at `http://localhost:5173`
 
 ## API Documentation
 
+- **[Enhanced Features v2](ENHANCED_FEATURES_V2.md)** ✨ - NEW! Production-ready enterprise features
 - **[HyperGraphQL API Documentation](documentation/hypergraphql_api.md)** - Complete API reference
+- **[OpenCog Usage Examples](documentation/opencog_usage_examples.md)** - Practical cognitive AI examples
 - **[Usage Examples](documentation/hypergraphql_usage_examples.md)** - Practical examples and patterns
 - **[Backend README](backend/README.md)** - Backend setup and configuration
 

@@ -1,0 +1,21 @@
+{
+  "params": {
+    "sqlStatements": [
+      "CREATE INDEX IF NOT EXISTS idx_nodes_type ON nodes(type);",
+      "CREATE INDEX IF NOT EXISTS idx_nodes_name ON nodes(name);",
+      "CREATE INDEX IF NOT EXISTS idx_nodes_metadata ON nodes USING GIN (metadata);",
+      "CREATE INDEX IF NOT EXISTS idx_edges_source ON edges(source);",
+      "CREATE INDEX IF NOT EXISTS idx_edges_target ON edges(target);",
+      "CREATE INDEX IF NOT EXISTS idx_edges_type ON edges(type);",
+      "CREATE INDEX IF NOT EXISTS idx_edges_metadata ON edges USING GIN (metadata);",
+      "CREATE INDEX IF NOT EXISTS idx_edges_source_target ON edges(source, target);",
+      "CREATE INDEX IF NOT EXISTS idx_hypergraph_metrics_name ON hypergraph_metrics(metric_name);",
+      "CREATE INDEX IF NOT EXISTS idx_hypergraph_metrics_node ON hypergraph_metrics(node_id);",
+      "RETURN NEW;",
+      "END;",
+      "$$ LANGUAGE plpgsql;",
+      "CREATE TRIGGER edges_update_timestamp\nBEFORE UPDATE ON edges\nFOR EACH ROW\nEXECUTE FUNCTION update_timestamp();"
+    ],
+    "projectId": "damp-brook-31747632"
+  }
+}

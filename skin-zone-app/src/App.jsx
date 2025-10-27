@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
-import CognitiveSynergy from '@/components/CognitiveSynergy.jsx'
+import CognitiveSynergy from '@/components/CognitiveSynergyEnhanced.jsx'
 import { 
   Search, 
   ShoppingCart, 

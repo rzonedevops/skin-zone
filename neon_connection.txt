@@ -1,0 +1,18 @@
+Neon Database Connection Details
+=================================
+
+Project: skin-zone-hypergraph
+Organization: zone (org-billowing-mountain-51013486)
+Project ID: damp-brook-31747632
+Branch: main (br-long-dew-af1mt5j4)
+Database: neondb
+Role: neondb_owner
+
+Connection String:
+postgresql://neondb_owner:npg_M8f5aNPYqUbl@ep-rapid-fire-afvjd8xb-pooler.c-2.us-west-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require
+
+Connection via psql:
+psql "postgresql://neondb_owner:npg_M8f5aNPYqUbl@ep-rapid-fire-afvjd8xb-pooler.c-2.us-west-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require"
+
+Created: 2025-10-27
+

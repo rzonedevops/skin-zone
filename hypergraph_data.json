@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "version": "4.0",
+    "version": "4.1",
     "last_updated": "2025-11-09",
     "description": "Skin Zone marketplace hypergraph with AI beauty technology integration",
-    "node_count": 168,
-    "edge_count": 204,
+    "node_count": 173,
+    "edge_count": 214,
     "ai_platforms_added": 18,
     "ai_technologies_added": 10
   },
@@ -1338,6 +1338,41 @@
       "type": "skin_concern",
       "name": "Eyebags",
       "category": "periorbital"
+    },
+    {
+      "id": "salicylic_acid",
+      "type": "ingredient",
+      "name": "Salicylic Acid",
+      "category": "beta_hydroxy_acid",
+      "function": "exfoliant"
+    },
+    {
+      "id": "benzoyl_peroxide",
+      "type": "ingredient",
+      "name": "Benzoyl Peroxide",
+      "category": "antibacterial",
+      "function": "acne_treatment"
+    },
+    {
+      "id": "azelaic_acid",
+      "type": "ingredient",
+      "name": "Azelaic Acid",
+      "category": "dicarboxylic_acid",
+      "function": "antibacterial_brightening"
+    },
+    {
+      "id": "kojic_acid",
+      "type": "ingredient",
+      "name": "Kojic Acid",
+      "category": "tyrosinase_inhibitor",
+      "function": "skin_lightening"
+    },
+    {
+      "id": "tranexamic_acid",
+      "type": "ingredient",
+      "name": "Tranexamic Acid",
+      "category": "amino_acid_derivative",
+      "function": "melanin_reduction"
     }
   ],
   "edges": [
@@ -2439,6 +2474,86 @@
       "source": "esthetician",
       "target": "ai_skin_analysis_tech",
       "type": "uses_technology"
+    },
+    {
+      "source": "niacinamide",
+      "target": "acne_concern",
+      "type": "treats",
+      "efficacy": 95,
+      "mechanism": "anti_inflammatory_sebum_regulation",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "retinol",
+      "target": "acne_concern",
+      "type": "treats",
+      "efficacy": 96,
+      "mechanism": "cell_turnover_pore_unclogging",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "salicylic_acid",
+      "target": "acne_concern",
+      "type": "treats",
+      "efficacy": 93,
+      "mechanism": "exfoliation_pore_cleansing",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "benzoyl_peroxide",
+      "target": "acne_concern",
+      "type": "treats",
+      "efficacy": 95,
+      "mechanism": "antibacterial_oil_reduction",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "azelaic_acid",
+      "target": "acne_concern",
+      "type": "treats",
+      "efficacy": 87,
+      "mechanism": "antibacterial_anti_inflammatory",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "vitamin_c",
+      "target": "pigmentation_concern",
+      "type": "treats",
+      "efficacy": 92,
+      "mechanism": "melanin_inhibition_antioxidant",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "niacinamide",
+      "target": "pigmentation_concern",
+      "type": "treats",
+      "efficacy": 90,
+      "mechanism": "melanin_transfer_inhibition",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "retinol",
+      "target": "pigmentation_concern",
+      "type": "treats",
+      "efficacy": 88,
+      "mechanism": "cell_turnover_melanin_dispersion",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "kojic_acid",
+      "target": "pigmentation_concern",
+      "type": "treats",
+      "efficacy": 85,
+      "mechanism": "tyrosinase_inhibition",
+      "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "tranexamic_acid",
+      "target": "pigmentation_concern",
+      "type": "treats",
+      "efficacy": 87,
+      "mechanism": "melanin_production_reduction",
+      "evidence_level": "dermatologist_consensus"
     }
   ]
 }

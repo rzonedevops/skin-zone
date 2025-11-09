@@ -1,10 +1,12 @@
 {
   "metadata": {
-    "version": "3.0",
-    "last_updated": "2025-11-03",
-    "description": "Enhanced Skin Zone marketplace hypergraph with comprehensive supplier pricing, salon/spa platforms, and professional networks",
-    "node_count": 130,
-    "edge_count": 169
+    "version": "4.0",
+    "last_updated": "2025-11-09",
+    "description": "Skin Zone marketplace hypergraph with AI beauty technology integration",
+    "node_count": 168,
+    "edge_count": 204,
+    "ai_platforms_added": 18,
+    "ai_technologies_added": 10
   },
   "nodes": [
     {
@@ -1065,6 +1067,277 @@
       "type": "feature",
       "name": "Time Tracking",
       "category": "hr"
+    },
+    {
+      "id": "glamar",
+      "type": "ai_platform",
+      "name": "GlamAR",
+      "best_for": "skin_report",
+      "website": "https://www.glamar.io/",
+      "features": [
+        "facial_skin_analysis",
+        "ar_try_on",
+        "live_scan",
+        "region_specific_analysis"
+      ]
+    },
+    {
+      "id": "perfect_corp",
+      "type": "ai_platform",
+      "name": "Perfect Corp",
+      "best_for": "hd_skin_analysis",
+      "website": "https://www.perfectcorp.com/",
+      "dermatologist_verified": true,
+      "brands_served": "500+",
+      "expert_knowledge_base": "500000+"
+    },
+    {
+      "id": "skincare_pro",
+      "type": "ai_product",
+      "parent": "perfect_corp",
+      "name": "Skincare Pro",
+      "best_for": "personalized_results",
+      "pricing_usd": 199,
+      "scan_duration_seconds": 7,
+      "platform": [
+        "iOS",
+        "iPad",
+        "iPhone"
+      ],
+      "hipaa_compliant": true
+    },
+    {
+      "id": "beauty_gpt",
+      "type": "ai_product",
+      "parent": "perfect_corp",
+      "name": "BeautyGPT",
+      "category": "ai_assistant",
+      "technologies": [
+        "LLM",
+        "NLP",
+        "NLU",
+        "RAG"
+      ]
+    },
+    {
+      "id": "skincare_gpt",
+      "type": "ai_product",
+      "parent": "perfect_corp",
+      "name": "SkincareGPT",
+      "category": "ai_assistant",
+      "specialization": "skincare"
+    },
+    {
+      "id": "skinive_ai",
+      "type": "ai_platform",
+      "name": "Skinive AI",
+      "best_for": "detecting_risk_factors"
+    },
+    {
+      "id": "tint_banuba",
+      "type": "ai_platform",
+      "name": "TINT (Banuba)",
+      "best_for": "skincare_try_on"
+    },
+    {
+      "id": "iqonic_ai",
+      "type": "ai_platform",
+      "name": "IQONIC.AI",
+      "best_for": "tailored_skincare_solution"
+    },
+    {
+      "id": "haut_ai",
+      "type": "ai_platform",
+      "name": "Haut.ai",
+      "best_for": "real_time_skin_simulations",
+      "website": "https://haut.ai/"
+    },
+    {
+      "id": "aseiko_skin",
+      "type": "ai_platform",
+      "name": "ASEIKO SKIN",
+      "best_for": "in_app_messenger"
+    },
+    {
+      "id": "cureskin",
+      "type": "ai_platform",
+      "name": "Cureskin",
+      "best_for": "dermatologist_assistance"
+    },
+    {
+      "id": "medgic",
+      "type": "ai_platform",
+      "name": "Medgic",
+      "best_for": "easy_to_use_interface"
+    },
+    {
+      "id": "ai_dermatologist",
+      "type": "ai_platform",
+      "name": "AI Dermatologist",
+      "best_for": "skin_cancer_detection"
+    },
+    {
+      "id": "skin_bliss",
+      "type": "ai_platform",
+      "name": "Skin Bliss",
+      "best_for": "product_scanning"
+    },
+    {
+      "id": "dermascan_ai",
+      "type": "ai_platform",
+      "name": "Dermascan AI",
+      "best_for": "treatment_recommendations"
+    },
+    {
+      "id": "trueskin_ai",
+      "type": "ai_platform",
+      "name": "TrueSkin AI",
+      "website": "https://trueskin.ai/"
+    },
+    {
+      "id": "lumino_skin",
+      "type": "ai_platform",
+      "name": "Lumino Skin",
+      "website": "https://lumino.skin/"
+    },
+    {
+      "id": "ai_derm",
+      "type": "ai_platform",
+      "name": "AI-Derm",
+      "website": "https://ai-derm.com/"
+    },
+    {
+      "id": "ai_skin_analysis_tech",
+      "type": "ai_technology",
+      "name": "AI Skin Analysis",
+      "category": "diagnostic",
+      "capabilities": [
+        "skin_type_detection",
+        "concern_identification",
+        "skin_age_estimation"
+      ]
+    },
+    {
+      "id": "hd_skin_analysis_tech",
+      "type": "ai_technology",
+      "name": "HD Skin Analysis",
+      "category": "diagnostic",
+      "resolution": "2x_higher_definition"
+    },
+    {
+      "id": "conversational_ai_tech",
+      "type": "ai_technology",
+      "name": "Conversational AI",
+      "category": "interaction",
+      "technologies": [
+        "LLM",
+        "NLP",
+        "NLU"
+      ]
+    },
+    {
+      "id": "rag_training_tech",
+      "type": "ai_technology",
+      "name": "RAG Training",
+      "category": "ai_enhancement",
+      "full_name": "Retrieval_Augmented_Generation"
+    },
+    {
+      "id": "ar_try_on_tech",
+      "type": "ai_technology",
+      "name": "AR Try-On",
+      "category": "visualization",
+      "full_name": "Augmented_Reality_Try_On"
+    },
+    {
+      "id": "virtual_makeup_tech",
+      "type": "ai_technology",
+      "name": "Virtual Makeup",
+      "category": "visualization"
+    },
+    {
+      "id": "face_analysis_tech",
+      "type": "ai_technology",
+      "name": "Face Analysis",
+      "category": "diagnostic"
+    },
+    {
+      "id": "skin_simulation_tech",
+      "type": "ai_technology",
+      "name": "Skin Simulation",
+      "category": "predictive"
+    },
+    {
+      "id": "progress_tracking_tech",
+      "type": "ai_technology",
+      "name": "Progress Tracking",
+      "category": "monitoring"
+    },
+    {
+      "id": "product_recommendation_ai",
+      "type": "ai_technology",
+      "name": "AI Product Recommendation",
+      "category": "recommendation"
+    },
+    {
+      "id": "acne_concern",
+      "type": "skin_concern",
+      "name": "Acne",
+      "category": "inflammatory"
+    },
+    {
+      "id": "pigmentation_concern",
+      "type": "skin_concern",
+      "name": "Pigmentation",
+      "category": "discoloration"
+    },
+    {
+      "id": "dark_circles_concern",
+      "type": "skin_concern",
+      "name": "Dark Circles",
+      "category": "periorbital"
+    },
+    {
+      "id": "wrinkles_concern",
+      "type": "skin_concern",
+      "name": "Wrinkles",
+      "category": "aging"
+    },
+    {
+      "id": "pores_concern",
+      "type": "skin_concern",
+      "name": "Pores",
+      "category": "texture"
+    },
+    {
+      "id": "spots_concern",
+      "type": "skin_concern",
+      "name": "Spots",
+      "category": "discoloration"
+    },
+    {
+      "id": "redness_concern",
+      "type": "skin_concern",
+      "name": "Redness",
+      "category": "inflammatory"
+    },
+    {
+      "id": "texture_concern",
+      "type": "skin_concern",
+      "name": "Texture",
+      "category": "surface"
+    },
+    {
+      "id": "firmness_concern",
+      "type": "skin_concern",
+      "name": "Firmness",
+      "category": "aging"
+    },
+    {
+      "id": "eyebags_concern",
+      "type": "skin_concern",
+      "name": "Eyebags",
+      "category": "periorbital"
     }
   ],
   "edges": [
@@ -1991,6 +2264,181 @@
       "source": "vagaro",
       "target": "nail_tech",
       "type": "serves"
+    },
+    {
+      "source": "glamar",
+      "target": "ai_skin_analysis_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "glamar",
+      "target": "ar_try_on_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "glamar",
+      "target": "product_recommendation_ai",
+      "type": "offers_technology"
+    },
+    {
+      "source": "perfect_corp",
+      "target": "hd_skin_analysis_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "perfect_corp",
+      "target": "ai_skin_analysis_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "perfect_corp",
+      "target": "ar_try_on_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "perfect_corp",
+      "target": "virtual_makeup_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "perfect_corp",
+      "target": "conversational_ai_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "perfect_corp",
+      "target": "rag_training_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "skincare_pro",
+      "target": "ai_skin_analysis_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "skincare_pro",
+      "target": "progress_tracking_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "skincare_pro",
+      "target": "product_recommendation_ai",
+      "type": "offers_technology"
+    },
+    {
+      "source": "beauty_gpt",
+      "target": "conversational_ai_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "beauty_gpt",
+      "target": "rag_training_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "skincare_gpt",
+      "target": "conversational_ai_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "skincare_gpt",
+      "target": "product_recommendation_ai",
+      "type": "offers_technology"
+    },
+    {
+      "source": "haut_ai",
+      "target": "skin_simulation_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "tint_banuba",
+      "target": "ar_try_on_tech",
+      "type": "offers_technology"
+    },
+    {
+      "source": "ai_skin_analysis_tech",
+      "target": "acne_concern",
+      "type": "detects"
+    },
+    {
+      "source": "ai_skin_analysis_tech",
+      "target": "pigmentation_concern",
+      "type": "detects"
+    },
+    {
+      "source": "ai_skin_analysis_tech",
+      "target": "dark_circles_concern",
+      "type": "detects"
+    },
+    {
+      "source": "ai_skin_analysis_tech",
+      "target": "wrinkles_concern",
+      "type": "detects"
+    },
+    {
+      "source": "ai_skin_analysis_tech",
+      "target": "pores_concern",
+      "type": "detects"
+    },
+    {
+      "source": "hd_skin_analysis_tech",
+      "target": "spots_concern",
+      "type": "detects"
+    },
+    {
+      "source": "hd_skin_analysis_tech",
+      "target": "texture_concern",
+      "type": "detects"
+    },
+    {
+      "source": "hd_skin_analysis_tech",
+      "target": "firmness_concern",
+      "type": "detects"
+    },
+    {
+      "source": "face_analysis_tech",
+      "target": "eyebags_concern",
+      "type": "detects"
+    },
+    {
+      "source": "face_analysis_tech",
+      "target": "dark_circles_concern",
+      "type": "detects"
+    },
+    {
+      "source": "glossgenius",
+      "target": "ai_skin_analysis_tech",
+      "type": "can_integrate"
+    },
+    {
+      "source": "vagaro",
+      "target": "ai_skin_analysis_tech",
+      "type": "can_integrate"
+    },
+    {
+      "source": "pocketsuite",
+      "target": "skincare_pro",
+      "type": "can_integrate"
+    },
+    {
+      "source": "mangomint",
+      "target": "perfect_corp",
+      "type": "can_integrate"
+    },
+    {
+      "source": "esthetician",
+      "target": "skincare_pro",
+      "type": "uses_tool"
+    },
+    {
+      "source": "esthetician",
+      "target": "glamar",
+      "type": "uses_tool"
+    },
+    {
+      "source": "esthetician",
+      "target": "ai_skin_analysis_tech",
+      "type": "uses_technology"
     }
   ]
 }

@@ -1,0 +1,275 @@
+{
+  "ai_platforms": {
+    "GlamAR": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "skin_report",
+      "features": [
+        "facial_skin_analysis",
+        "range_of_skin_concerns",
+        "personalized_skincare_recommendations",
+        "ar_try_on",
+        "live_scan",
+        "region_specific_analysis"
+      ],
+      "skin_concerns_detected": [
+        "acne",
+        "pigmentation",
+        "dark_circles",
+        "scars",
+        "pores"
+      ],
+      "analysis_types": [
+        "t_zone",
+        "u_zone",
+        "full_face"
+      ],
+      "lighting_tolerance": "varying_conditions",
+      "website": "https://www.glamar.io/"
+    },
+    "Perfect_Corp": {
+      "type": "ai_beauty_platform",
+      "best_for": "hd_skin_analysis",
+      "products": [
+        "AI_Skin_Diagnostic",
+        "Skincare_Pro",
+        "Beauty_Agent",
+        "BeautyGPT",
+        "SkincareGPT"
+      ],
+      "features": [
+        "hd_sd_skin_analysis",
+        "15_skin_concerns_detection",
+        "accurate_visualization",
+        "ar_try_on",
+        "virtual_makeup",
+        "ai_beauty_agent",
+        "conversational_ai",
+        "rag_training",
+        "brand_persona_customization"
+      ],
+      "skin_concerns_detected": 15,
+      "analysis_modes": [
+        "photo",
+        "live",
+        "hd",
+        "sd"
+      ],
+      "face_mapping": "180_degree",
+      "test_retest_reliability": "95%",
+      "dermatologist_verified": true,
+      "website": "https://www.perfectcorp.com/",
+      "training_data": {
+        "brands": "500+",
+        "expert_knowledge_base": "500000+",
+        "dermatologist_graded_images": "millions",
+        "ar_product_skus": "millions"
+      },
+      "technologies": [
+        "LLM",
+        "NLP",
+        "NLU",
+        "RAG",
+        "AR",
+        "AI"
+      ],
+      "pricing": {
+        "skincare_pro": "starting_at_199_per_month",
+        "free_trial": "14_days"
+      }
+    },
+    "Skincare_Pro": {
+      "type": "ai_skin_scanner_app",
+      "parent": "Perfect_Corp",
+      "best_for": "personalized_results",
+      "target_users": [
+        "medspas",
+        "aesthetic_clinics",
+        "tele_dermatology"
+      ],
+      "features": [
+        "15_skin_concerns_detection",
+        "instant_recommendations",
+        "progress_tracking",
+        "hipaa_compliant",
+        "gdpr_compliant",
+        "built_in_crm",
+        "before_after_visualization",
+        "ui_configuration",
+        "data_analysis_visualization",
+        "device_management"
+      ],
+      "scan_duration": "7_seconds",
+      "platform": [
+        "iOS",
+        "iPad",
+        "iPhone"
+      ],
+      "comparison_vs_visia": {
+        "monthly_fee": 199,
+        "visia_cost": 12000,
+        "concerns_detected": 15,
+        "visia_concerns": 8,
+        "portability": "high",
+        "visia_portability": "low"
+      }
+    },
+    "Skinive_AI": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "detecting_risk_factors"
+    },
+    "TINT_Banuba": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "skincare_try_on"
+    },
+    "IQONIC_AI": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "tailored_skincare_solution"
+    },
+    "Haut_ai": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "real_time_skin_simulations",
+      "website": "https://haut.ai/"
+    },
+    "ASEIKO_SKIN": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "in_app_messenger"
+    },
+    "Cureskin": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "dermatologist_assistance"
+    },
+    "Medgic": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "easy_to_use_interface"
+    },
+    "AI_Dermatologist": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "skin_cancer_detection"
+    },
+    "Skin_Bliss": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "product_scanning"
+    },
+    "Dermascan_AI": {
+      "type": "ai_skin_analysis_platform",
+      "best_for": "treatment_recommendations"
+    },
+    "TrueSkin_AI": {
+      "type": "ai_skin_analysis_platform",
+      "website": "https://trueskin.ai/"
+    },
+    "Lumino_Skin": {
+      "type": "ai_skin_analysis_platform",
+      "website": "https://lumino.skin/"
+    },
+    "AI_Derm": {
+      "type": "ai_skin_analysis_platform",
+      "website": "https://ai-derm.com/"
+    }
+  },
+  "ai_features": {
+    "ai_skin_analysis": {
+      "category": "diagnostic",
+      "capabilities": [
+        "skin_type_detection",
+        "concern_identification",
+        "skin_age_estimation"
+      ]
+    },
+    "hd_skin_analysis": {
+      "category": "diagnostic",
+      "resolution": "2x_higher_definition",
+      "benefits": [
+        "finer_detail_capture",
+        "enhanced_accuracy",
+        "clearer_visualization"
+      ]
+    },
+    "conversational_ai": {
+      "category": "interaction",
+      "technologies": [
+        "LLM",
+        "NLP",
+        "NLU"
+      ],
+      "capabilities": [
+        "24_7_interaction",
+        "personalized_advice",
+        "product_recommendations"
+      ]
+    },
+    "rag_training": {
+      "category": "ai_enhancement",
+      "full_name": "Retrieval_Augmented_Generation",
+      "benefits": [
+        "improved_precision",
+        "clearer_context",
+        "brand_customization",
+        "knowledge_integration"
+      ]
+    },
+    "ar_try_on": {
+      "category": "visualization",
+      "full_name": "Augmented_Reality_Try_On",
+      "applications": [
+        "makeup",
+        "skincare",
+        "product_visualization"
+      ]
+    },
+    "virtual_makeup": {
+      "category": "visualization",
+      "capabilities": [
+        "real_time_application",
+        "step_by_step_tutorial",
+        "product_recommendation"
+      ]
+    },
+    "face_analysis": {
+      "category": "diagnostic",
+      "capabilities": [
+        "facial_feature_detection",
+        "face_shape_analysis",
+        "personalized_recommendations"
+      ]
+    },
+    "skin_simulation": {
+      "category": "predictive",
+      "capabilities": [
+        "treatment_outcome_preview",
+        "aging_simulation",
+        "product_effect_visualization"
+      ]
+    },
+    "beauty_gpt": {
+      "category": "ai_assistant",
+      "capabilities": [
+        "conversational_shopping",
+        "personalized_guidance",
+        "brand_aligned_persona"
+      ]
+    },
+    "skincare_gpt": {
+      "category": "ai_assistant",
+      "specialization": "skincare",
+      "capabilities": [
+        "skin_consultation",
+        "product_recommendation",
+        "routine_planning"
+      ]
+    }
+  },
+  "market_trends": {
+    "ai_skin_analysis_growth": "standard_within_2_years",
+    "market_value_2023": "181.2_billion_usd",
+    "growth_rate_2025_2030": "3.53_percent",
+    "consumer_behavior": "proactive_conscious_personalized",
+    "technology_shift": "generic_to_personalized_solutions"
+  },
+  "integration_opportunities": {
+    "supplier_connection": "ai_analysis_to_ingredient_recommendation",
+    "platform_connection": "salon_spa_platforms_with_ai_diagnostics",
+    "professional_connection": "estheticians_with_ai_tools",
+    "client_journey": "analysis_recommendation_purchase_tracking"
+  }
+}

@@ -1,12 +1,13 @@
 {
   "metadata": {
-    "version": "4.1",
-    "last_updated": "2025-11-09",
-    "description": "Skin Zone marketplace hypergraph with AI beauty technology integration",
-    "node_count": 173,
-    "edge_count": 214,
+    "version": "5.0",
+    "last_updated": "2025-11-10",
+    "description": "Skin Zone marketplace hypergraph with November 2025 pricing updates",
+    "node_count": 176,
+    "edge_count": 221,
     "ai_platforms_added": 18,
-    "ai_technologies_added": 10
+    "ai_technologies_added": 10,
+    "updates_applied": 27
   },
   "nodes": [
     {
@@ -23,14 +24,15 @@
         "USDA_Organic"
       ],
       "founded": 1997,
-      "processing_time_days": 5
+      "processing_time_days": 5,
+      "last_updated": "2025-11-10"
     },
     {
       "id": "lotion_crafter",
       "type": "supplier",
       "name": "Lotion Crafter",
       "website": "https://lotioncrafter.com/",
-      "processing_time_days": 2,
+      "processing_time_days": "1-3",
       "currencies": [
         "USD",
         "INR",
@@ -44,7 +46,8 @@
         "formulary_tools",
         "calculators",
         "wholesale_pricing"
-      ]
+      ],
+      "last_updated": "2025-11-10"
     },
     {
       "id": "fnwl",
@@ -57,7 +60,8 @@
         "Organic_Trade_Association"
       ],
       "focus": "organic_natural",
-      "rewards_program": true
+      "rewards_program": true,
+      "last_updated": "2025-11-10"
     },
     {
       "id": "essential_labs",
@@ -142,7 +146,10 @@
       "name": "Tetrahexyldecyl Ascorbate (THDA)",
       "category": "vitamin_c_derivative",
       "function": "stable_vitamin_c_brightening",
-      "price_per_kg_usd": 759.95
+      "price_per_kg_usd": 759.95,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "sea_kelp_bioferment",
@@ -151,7 +158,8 @@
       "category": "bioactive_extract",
       "function": "hydration_soothing",
       "price_per_kg_usd": 52.5,
-      "availability": "sold_out"
+      "availability": "sold_out",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "snow_mushroom_complex",
@@ -159,7 +167,10 @@
       "name": "Snow Mushroom Complex",
       "category": "humectant_bioactive",
       "function": "superior_hydration",
-      "price_per_kg_usd": 144.95
+      "price_per_kg_usd": 144.95,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "silk_amino_acids",
@@ -167,7 +178,10 @@
       "name": "Silk Amino Acids PF",
       "category": "protein",
       "function": "conditioning_strengthening",
-      "price_per_kg_usd": 84.22
+      "price_per_kg_usd": 84.22,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "sepimax_zen",
@@ -175,7 +189,10 @@
       "name": "Sepimax Zen",
       "category": "thickener",
       "function": "texture_enhancement",
-      "price_per_kg_usd": 122.16
+      "price_per_kg_usd": 122.16,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "sodium_pca",
@@ -184,7 +201,8 @@
       "category": "humectant",
       "function": "moisture_binding",
       "price_per_kg_usd": 39.12,
-      "availability": "sold_out"
+      "availability": "sold_out",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "phenonip_xb",
@@ -192,7 +210,10 @@
       "name": "Phenonip XB",
       "category": "preservative",
       "function": "broad_spectrum_preservation",
-      "price_per_kg_usd": 29.65
+      "price_per_kg_usd": 29.65,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "neodefend",
@@ -200,7 +221,10 @@
       "name": "NeoDefend",
       "category": "preservative",
       "function": "natural_preservation",
-      "price_per_kg_usd": 66.13
+      "price_per_kg_usd": 66.13,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "montanov_202",
@@ -208,7 +232,10 @@
       "name": "Montanov 202",
       "category": "emulsifier",
       "function": "natural_emulsification",
-      "price_per_kg_usd": 63.45
+      "price_per_kg_usd": 63.45,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "stearic_acid",
@@ -216,7 +243,10 @@
       "name": "Stearic Acid XXX Flakes",
       "category": "fatty_acid",
       "function": "thickening_emulsifying",
-      "price_per_kg_usd": 8.53
+      "price_per_kg_usd": 8.53,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "surfpro_slsa",
@@ -224,7 +254,10 @@
       "name": "SurfPro SLSa",
       "category": "surfactant",
       "function": "cleansing_foaming",
-      "price_per_kg_usd": 31.53
+      "price_per_kg_usd": 31.53,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "potassium_sorbate",
@@ -232,7 +265,10 @@
       "name": "Potassium Sorbate",
       "category": "preservative",
       "function": "antimicrobial",
-      "price_per_kg_usd": 13.01
+      "price_per_kg_usd": 13.01,
+      "supplier": "lotion_crafter",
+      "availability": "in_stock",
+      "last_updated": "2025-11-10"
     },
     {
       "id": "cupuacu_butter",
@@ -278,17 +314,21 @@
         "standard": {
           "monthly": 28,
           "annual_monthly": 24,
-          "savings_pct": 14
+          "savings_pct": 14,
+          "description": "Business essentials"
         },
         "gold": {
           "monthly": 56,
           "annual_monthly": 48,
-          "savings_pct": 14
+          "savings_pct": 14,
+          "description": "Growth tools for entrepreneurs and teams",
+          "popular": true
         },
         "platinum": {
           "monthly": 168,
           "annual_monthly": 148,
-          "savings_pct": 12
+          "savings_pct": 12,
+          "description": "Power features for scaling growth"
         }
       },
       "features_count": "100+",
@@ -298,7 +338,9 @@
         "avg_rebooking_rate_pct": 75,
         "avg_booking_increase_pct": 22,
         "avg_annual_savings_usd": 8000
-      }
+      },
+      "instant_payout_fee": 0.018,
+      "last_updated": "2025-11-10"
     },
     {
       "id": "vagaro",
@@ -306,7 +348,7 @@
       "name": "Vagaro",
       "website": "https://www.vagaro.com/",
       "platform_type": "management_and_marketplace",
-      "pricing_start_usd": 23.99,
+      "pricing_start_usd": 30,
       "user_base": "20000000+",
       "professionals": "220000+",
       "marketplace_fee": 0,
@@ -315,7 +357,9 @@
         "CA",
         "UK",
         "AU"
-      ]
+      ],
+      "additional_provider_usd": 10,
+      "last_updated": "2025-11-10"
     },
     {
       "id": "styleseat",
@@ -1373,6 +1417,39 @@
       "name": "Tranexamic Acid",
       "category": "amino_acid_derivative",
       "function": "melanin_reduction"
+    },
+    {
+      "id": "vitamin_e_tocopherols",
+      "type": "ingredient",
+      "name": "Vitamin E Mixed Tocopherols 95%",
+      "category": "antioxidant",
+      "function": "protective_antioxidant",
+      "price_per_kg_usd": 518.55,
+      "purity": "95%",
+      "supplier": "lotion_crafter",
+      "availability": "in_stock"
+    },
+    {
+      "id": "bulk_actives",
+      "type": "supplier",
+      "name": "BulkActives",
+      "website": "https://www.bulkactives.com/",
+      "focus": "cosmeceuticals_standardized_extracts",
+      "specialty": "active_ingredients"
+    },
+    {
+      "id": "ingredi",
+      "type": "supplier",
+      "name": "Ingredi",
+      "website": "https://ingredi.com/",
+      "product_range": "900+",
+      "focus": "premium_wholesale_ingredients",
+      "categories": [
+        "skincare",
+        "haircare",
+        "food",
+        "beverage"
+      ]
     }
   ],
   "edges": [
@@ -2554,6 +2631,83 @@
       "efficacy": 87,
       "mechanism": "melanin_production_reduction",
       "evidence_level": "dermatologist_consensus"
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "vitamin_e_tocopherols",
+      "type": "supplies",
+      "metadata": {
+        "price_per_kg_usd": 518.55,
+        "availability": "in_stock",
+        "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "surfpro_sci",
+      "type": "supplies",
+      "metadata": {
+        "price_per_kg_usd": 26.67,
+        "availability": "in_stock",
+        "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "polysorbate_60",
+      "type": "supplies",
+      "metadata": {
+        "price_per_kg_usd": 17.35,
+        "availability": "in_stock",
+        "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "phytocide_elderberry",
+      "type": "supplies",
+      "metadata": {
+        "price_per_kg_usd": 122.58,
+        "availability": "in_stock",
+        "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "natrasil",
+      "type": "supplies",
+      "metadata": {
+        "price_per_kg_usd": 25.95,
+        "availability": "in_stock",
+        "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "montanov_68_mb",
+      "type": "supplies",
+      "metadata": {
+        "price_per_kg_usd": 60.19,
+        "availability": "in_stock",
+        "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "meadowfoam_xpr",
+      "type": "supplies",
+      "metadata": {
+        "price_per_kg_usd": 60.83,
+        "availability": "in_stock",
+        "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
     }
   ]
 }

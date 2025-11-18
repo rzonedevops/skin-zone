@@ -114,7 +114,7 @@ const JAXCEOSubsystem = () => {
 
 // Hypergraph Neural Network Visualization
 const HypergraphVisualization = () => {
-  const [networkStats, setNetworkStats] = useState({
+  const [networkStats] = useState({
     totalNodes: 847,
     activeConnections: 2341,
     emergentPatterns: 156,
@@ -187,7 +187,7 @@ const HypergraphVisualization = () => {
 
 // Cognitive Hemispheres Component
 const CognitiveHemispheres = () => {
-  const [hemisphereActivity, setHemisphereActivity] = useState({
+  const [hemisphereActivity] = useState({
     deepTreeEcho: {
       noveltyDetection: 89,
       primePatterns: 76,
@@ -306,14 +306,6 @@ const CognitiveSynergy = () => {
     systemCoherence: 85,
     cognitiveLoad: 73
   })
-
-  const [realTimeData, setRealTimeData] = useState([
-    { time: '10:00', synergy: 82 },
-    { time: '10:15', synergy: 85 },
-    { time: '10:30', synergy: 87 },
-    { time: '10:45', synergy: 89 },
-    { time: '11:00', synergy: 87 }
-  ])
 
   useEffect(() => {
     const interval = setInterval(() => {

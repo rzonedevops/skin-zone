@@ -27,13 +27,6 @@ const RealTimeCognitiveMetrics = ({ nodes, edges }) => {
     return 'text-red-600';
   };
 
-  const getProgressColor = (value) => {
-    if (value >= 80) return 'bg-green-600';
-    if (value >= 60) return 'bg-blue-600';
-    if (value >= 40) return 'bg-yellow-600';
-    return 'bg-red-600';
-  };
-
   const metricDescriptions = {
     networkStrength: 'Measures overall connectivity and robustness of the hypergraph network',
     adaptiveCapacity: 'Ability to respond to market changes through diverse node types and connections',

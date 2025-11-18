@@ -1,13 +1,18 @@
 {
   "metadata": {
-    "version": "5.0",
-    "last_updated": "2025-11-10",
-    "description": "Skin Zone marketplace hypergraph with November 2025 pricing updates",
-    "node_count": 176,
-    "edge_count": 221,
+    "version": "6.0",
+    "last_updated": "2025-11-18",
+    "description": "Skin Zone marketplace hypergraph with November 18, 2025 bulk pricing and salon platform updates",
+    "node_count": 193,
+    "edge_count": 243,
     "ai_platforms_added": 18,
     "ai_technologies_added": 10,
-    "updates_applied": 27
+    "updates_applied": 27,
+    "bulk_ingredients_added": 16,
+    "salon_platforms_added": 6,
+    "nodes_added_nov18": 17,
+    "edges_added_nov18": 22,
+    "nodes_updated_nov18": 2
   },
   "nodes": [
     {
@@ -16,7 +21,7 @@
       "name": "Making Cosmetics",
       "website": "https://www.makingcosmetics.com/",
       "location": "Washington, USA",
-      "catalog_size": "1000+",
+      "catalog_size": "1124+",
       "certifications": [
         "ISO",
         "GMP",
@@ -25,7 +30,8 @@
       ],
       "founded": 1997,
       "processing_time_days": 5,
-      "last_updated": "2025-11-10"
+      "last_updated": "2025-11-18",
+      "reward_points": 200
     },
     {
       "id": "lotion_crafter",
@@ -47,7 +53,11 @@
         "calculators",
         "wholesale_pricing"
       ],
-      "last_updated": "2025-11-10"
+      "last_updated": "2025-11-18",
+      "discount_codes": {
+        "SAVE10": "10% off orders <$150",
+        "SAVE15": "15% off orders $150+"
+      }
     },
     {
       "id": "fnwl",
@@ -1450,6 +1460,197 @@
         "food",
         "beverage"
       ]
+    },
+    {
+      "id": "vitamin_e_tocopherols_95_bulk",
+      "type": "ingredient",
+      "name": "Vitamin E, Mixed Tocopherols 95% (7lb Bulk)",
+      "category": "antioxidant",
+      "bulk_size_lbs": 7,
+      "price_usd": 1649.0,
+      "price_per_lb": 235.57,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "thda_bulk",
+      "type": "ingredient",
+      "name": "Tetrahexyldecyl Ascorbate (THDA), Non-Deodorized (1kg Bulk)",
+      "category": "vitamin_c_derivative",
+      "bulk_size_kg": 1,
+      "price_usd": 808.5,
+      "price_per_kg": 808.5,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "surfpro_slsa_bulk",
+      "type": "ingredient",
+      "name": "SurfPro\u2122 SLSa (20lb Bulk)",
+      "category": "surfactant",
+      "bulk_size_lbs": 20,
+      "price_usd": 285.95,
+      "price_per_lb": 14.3,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "surfpro_sci_bulk",
+      "type": "ingredient",
+      "name": "SurfPro\u2122 SCI (20lb Bulk)",
+      "category": "surfactant",
+      "bulk_size_lbs": 20,
+      "price_usd": 241.95,
+      "price_per_lb": 12.1,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "stearic_acid_bulk",
+      "type": "ingredient",
+      "name": "Stearic Acid XXX Flakes (55lb Bulk)",
+      "category": "emulsifier",
+      "bulk_size_lbs": 55,
+      "price_usd": 212.85,
+      "price_per_lb": 3.87,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "sodium_pca_bulk",
+      "type": "ingredient",
+      "name": "Sodium PCA 50% (25kg Bulk)",
+      "category": "humectant",
+      "bulk_size_kg": 25,
+      "price_usd": 978.0,
+      "price_per_kg": 39.12,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "snow_mushroom_bulk",
+      "type": "ingredient",
+      "name": "Snow Mushroom Complex (15kg Bulk)",
+      "category": "humectant",
+      "bulk_size_kg": 15,
+      "price_usd": 2174.25,
+      "price_per_kg": 144.95,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "silk_amino_acids_bulk",
+      "type": "ingredient",
+      "name": "Silk Amino Acids PF (10kg Bulk)",
+      "category": "protein",
+      "bulk_size_kg": 10,
+      "price_usd": 842.2,
+      "price_per_kg": 84.22,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "sepimax_zen_bulk",
+      "type": "ingredient",
+      "name": "Sepimax Zen\u2122 (12kg Bulk)",
+      "category": "thickener",
+      "bulk_size_kg": 12,
+      "price_usd": 1465.95,
+      "price_per_kg": 122.16,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "sea_kelp_bioferment_bulk",
+      "type": "ingredient",
+      "name": "Sea Kelp Bioferment (20kg Bulk)",
+      "category": "botanical",
+      "bulk_size_kg": 20,
+      "price_usd": 1050.0,
+      "price_per_kg": 52.5,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "potassium_sorbate_bulk",
+      "type": "ingredient",
+      "name": "Potassium Sorbate (50lb Bulk)",
+      "category": "preservative",
+      "bulk_size_lbs": 50,
+      "price_usd": 295.0,
+      "price_per_lb": 5.9,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "phenonip_xb_bulk",
+      "type": "ingredient",
+      "name": "Phenonip\u00ae XB (25kg Bulk)",
+      "category": "preservative",
+      "bulk_size_kg": 25,
+      "price_usd": 741.25,
+      "price_per_kg": 29.65,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "neodefend_bulk",
+      "type": "ingredient",
+      "name": "NeoDefend\u2122 (25 lbs Bulk)",
+      "category": "preservative",
+      "bulk_size_lbs": 25,
+      "price_usd": 749.95,
+      "price_per_lb": 30.0,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "montanov_68mb_bulk",
+      "type": "ingredient",
+      "name": "Montanov\u2122 68 MB (25lb Bulk)",
+      "category": "emulsifier",
+      "bulk_size_lbs": 25,
+      "price_usd": 682.5,
+      "price_per_lb": 27.3,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "montanov_202_bulk",
+      "type": "ingredient",
+      "name": "Montanov 202 (25lb Bulk)",
+      "category": "emulsifier",
+      "bulk_size_lbs": 25,
+      "price_usd": 719.5,
+      "price_per_lb": 28.78,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "meadowfoam_xpr_bulk",
+      "type": "ingredient",
+      "name": "Meadowfoam XPR Expeller Pressed (35lb Bulk)",
+      "category": "oil",
+      "bulk_size_lbs": 35,
+      "price_usd": 965.85,
+      "price_per_lb": 27.6,
+      "supplier": "lotion_crafter",
+      "last_updated": "2025-11-18"
+    },
+    {
+      "id": "mindbody",
+      "type": "platform",
+      "name": "Mindbody",
+      "category": "enterprise_wellness",
+      "pricing_min_usd": 129,
+      "pricing_max_usd": 349,
+      "pricing_model": "subscription",
+      "features": [
+        "scheduling",
+        "marketing",
+        "analytics"
+      ],
+      "last_updated": "2025-11-18"
     }
   ],
   "edges": [
@@ -2706,6 +2907,242 @@
         "price_per_kg_usd": 60.83,
         "availability": "in_stock",
         "last_updated": "2025-11-10"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "vitamin_e_tocopherols_95_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 1649.0,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "thda_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 808.5,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "surfpro_slsa_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 285.95,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "surfpro_sci_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 241.95,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "stearic_acid_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 212.85,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "sodium_pca_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 978.0,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "snow_mushroom_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 2174.25,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "silk_amino_acids_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 842.2,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "sepimax_zen_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 1465.95,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "sea_kelp_bioferment_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 1050.0,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "potassium_sorbate_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 295.0,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "phenonip_xb_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 741.25,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "neodefend_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 749.95,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "montanov_68mb_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 682.5,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "montanov_202_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 719.5,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "lotion_crafter",
+      "target": "meadowfoam_xpr_bulk",
+      "type": "supplies",
+      "metadata": {
+        "price_usd": 965.85,
+        "availability": "in_stock",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "glossgenius",
+      "target": "facial_basic",
+      "type": "enables_booking",
+      "metadata": {
+        "integration_type": "booking_management",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "vagaro",
+      "target": "facial_basic",
+      "type": "enables_booking",
+      "metadata": {
+        "integration_type": "booking_management",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "styleseat",
+      "target": "facial_basic",
+      "type": "marketplace_listing",
+      "metadata": {
+        "integration_type": "booking_management",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "fresha",
+      "target": "facial_basic",
+      "type": "marketplace_listing",
+      "metadata": {
+        "integration_type": "booking_management",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "square_appointments",
+      "target": "facial_basic",
+      "type": "enables_booking",
+      "metadata": {
+        "integration_type": "booking_management",
+        "last_updated": "2025-11-18"
+      },
+      "weight": 1.0
+    },
+    {
+      "source": "mindbody",
+      "target": "facial_basic",
+      "type": "enables_booking",
+      "metadata": {
+        "integration_type": "booking_management",
+        "last_updated": "2025-11-18"
       },
       "weight": 1.0
     }

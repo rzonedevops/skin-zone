@@ -4,22 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
+// Node type color mapping (defined outside component to avoid re-creation)
+const nodeColors = {
+  supplier: '#3b82f6',      // blue
+  ingredient: '#10b981',    // green
+  platform: '#8b5cf6',      // purple
+  salon: '#f59e0b',         // amber
+  service: '#ec4899',       // pink
+  professional: '#06b6d4',  // cyan
+  certification: '#84cc16', // lime
+  category: '#6366f1'       // indigo
+};
+
 const HypergraphVisualization = ({ data }) => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
-  const [dimensions, setDimensions] = useState({ width: 1200, height: 800 });
-
-  // Node type color mapping
-  const nodeColors = {
-    supplier: '#3b82f6',      // blue
-    ingredient: '#10b981',    // green
-    platform: '#8b5cf6',      // purple
-    salon: '#f59e0b',         // amber
-    service: '#ec4899',       // pink
-    professional: '#06b6d4',  // cyan
-    certification: '#84cc16', // lime
-    category: '#6366f1'       // indigo
-  };
+  const [dimensions] = useState({ width: 1200, height: 800 });
 
   useEffect(() => {
     if (!data || !svgRef.current) return;

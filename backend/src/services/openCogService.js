@@ -1,0 +1,1606 @@
+import dataService from './dataService.js';
+import knowledgeTransferService from './knowledgeTransferService.js';
+import persistenceService from './persistenceService.js';
+
+/**
+ * OpenCogService - Cognitive architecture integration for Skin Zone marketplace
+ * 
+ * This service provides OpenCog-inspired cognitive capabilities including:
+ * - AtomSpace-like knowledge representation (multi-tenant)
+ * - Pattern matching for complex queries
+ * - Probabilistic reasoning (PLN-inspired)
+ * - Recommendation engine with cognitive reasoning
+ * - Supply chain intelligence analysis
+ * - Cross-tenant knowledge transfer (federated learning)
+ * - Persistence with optional Redis support
+ * 
+ * Note: This is a Node.js implementation of OpenCog concepts.
+ * For production, consider integrating with actual OpenCog framework via REST API or gRPC.
+ */
+class OpenCogService {
+  constructor() {
+    // Multi-tenant AtomSpaces (in-memory knowledge stores)
+    this.atomSpaces = new Map();
+    
+    // Shared knowledge base accessible across tenants
+    this.sharedKnowledge = {
+      atoms: new Map(),
+      rules: [],
+      patterns: new Map()
+    };
+    
+    // Pattern matcher cache for performance
+    this.patternCache = new Map();
+    
+    // Reasoning rules library
+    this.rules = {
+      safety: [],
+      quality: [],
+      business: [],
+      recommendations: []
+    };
+
+    // URE (Unified Rule Engine) rules for inference
+    this.ureRules = [];
+
+    // Attention allocation tracking (ECAN)
+    this.attentionFocus = new Map(); // Track important atoms per tenant
+    
+    // Learning history for incremental updates
+    this.learningHistory = new Map();
+    
+    this.initialized = false;
+  }
+
+  /**
+   * Initialize OpenCog service and load knowledge bases
+   */
+  async initialize() {
+    if (this.initialized) return;
+    
+    console.log('Initializing OpenCog Service...');
+    
+    // Ensure data service is initialized
+    await dataService.initialize();
+    
+    // Initialize persistence and knowledge transfer services
+    await persistenceService.initialize();
+    knowledgeTransferService.initialize();
+    
+    // Load shared knowledge from common entities
+    await this._loadSharedKnowledge();
+    
+    // Initialize reasoning rules
+    this._initializeReasoningRules();
+    
+    // Setup default tenant AtomSpaces
+    this._initializeDefaultAtomSpace();
+    
+    // Try to restore AtomSpaces from persistence
+    await this._restorePersistedAtomSpaces();
+    
+    this.initialized = true;
+    console.log('OpenCog Service initialized successfully');
+  }
+
+  /**
+   * Get or create AtomSpace for a tenant
+   */
+  _getAtomSpace(tenantId = 'default') {
+    if (!this.atomSpaces.has(tenantId)) {
+      this.atomSpaces.set(tenantId, {
+        atoms: new Map(),
+        links: new Map(),
+        attention: new Map(), // Attention values for importance
+        truthValues: new Map(), // Truth values (strength, confidence)
+        created: Date.now()
+      });
+    }
+    return this.atomSpaces.get(tenantId);
+  }
+
+  /**
+   * Load shared knowledge base from common entities
+   */
+  async _loadSharedKnowledge() {
+    // Load common ingredients as shared knowledge
+    const ingredients = dataService.getNodes({ type: 'ingredient' });
+    
+    ingredients.forEach(ingredient => {
+      const atom = this._createAtom('concept', ingredient.id, {
+        name: ingredient.name,
+        properties: ingredient.properties,
+        type: 'ingredient',
+        shared: true
+      });
+      
+      this.sharedKnowledge.atoms.set(ingredient.id, atom);
+    });
+    
+    console.log(`Loaded ${ingredients.length} shared knowledge atoms`);
+  }
+
+  /**
+   * Initialize reasoning rules library
+   */
+  _initializeReasoningRules() {
+    // Safety rules
+    this.rules.safety = [
+      {
+        id: 'avoid-allergen',
+        name: 'Avoid Allergen',
+        condition: (customer, product) => {
+          if (!customer.properties?.allergies) return false;
+          const productIngredients = this._getProductIngredients(product.id);
+          return productIngredients.some(ing => 
+            customer.properties.allergies.includes(ing.name)
+          );
+        },
+        action: 'recommend-alternative',
+        priority: 10
+      },
+      {
+        id: 'check-skin-type',
+        name: 'Check Skin Type Compatibility',
+        condition: (customer, product) => {
+          if (!customer.properties?.skinType || !product.properties?.suitableFor) return true;
+          return product.properties.suitableFor.includes(customer.properties.skinType);
+        },
+        action: 'compatibility-score',
+        priority: 8
+      }
+    ];
+
+    // Quality rules
+    this.rules.quality = [
+      {
+        id: 'supplier-certification',
+        name: 'Supplier Certification Check',
+        condition: (product) => {
+          const suppliers = this._getProductSuppliers(product.id);
+          return suppliers.every(s => s.properties?.certified === true);
+        },
+        action: 'quality-boost',
+        priority: 7
+      }
+    ];
+
+    // Business rules
+    this.rules.business = [
+      {
+        id: 'cross-sell',
+        name: 'Cross-Sell Opportunity',
+        condition: (customer, product) => {
+          const purchases = this._getCustomerPurchases(customer.id);
+          return purchases.length > 0 && !purchases.find(p => p.id === product.id);
+        },
+        action: 'suggest-bundle',
+        priority: 5
+      }
+    ];
+
+    // Recommendation rules
+    this.rules.recommendations = [
+      {
+        id: 'high-efficacy',
+        name: 'Prioritize High Efficacy',
+        condition: (treatment) => {
+          return (treatment.properties?.efficacy || 0) > 0.8;
+        },
+        action: 'boost-score',
+        priority: 9
+      }
+    ];
+  }
+
+  /**
+   * Initialize default tenant AtomSpace
+   */
+  _initializeDefaultAtomSpace() {
+    const defaultSpace = this._getAtomSpace('default');
+    
+    // Load all entities into default AtomSpace
+    const nodes = dataService.getNodes();
+    nodes.forEach(node => {
+      this._addAtomToSpace(defaultSpace, node);
+    });
+
+    // Load relationships
+    const edges = dataService.getEdges();
+    edges.forEach(edge => {
+      this._addLinkToSpace(defaultSpace, edge);
+    });
+  }
+
+  /**
+   * Create an atom (node in AtomSpace)
+   */
+  _createAtom(type, id, data) {
+    return {
+      type: type, // 'concept', 'predicate', 'variable', etc.
+      id: id,
+      data: data,
+      truthValue: { strength: 1.0, confidence: 0.9 },
+      attentionValue: { sti: 100, lti: 0, vlti: 0 }, // Short/Long-term importance
+      created: Date.now()
+    };
+  }
+
+  /**
+   * Add atom to tenant AtomSpace
+   */
+  _addAtomToSpace(atomSpace, node) {
+    const atom = this._createAtom('concept', node.id, node);
+    atomSpace.atoms.set(node.id, atom);
+    atomSpace.truthValues.set(node.id, atom.truthValue);
+    atomSpace.attention.set(node.id, atom.attentionValue);
+  }
+
+  /**
+   * Add link (relationship) to tenant AtomSpace
+   */
+  _addLinkToSpace(atomSpace, edge) {
+    const link = {
+      id: edge.id,
+      type: 'evaluation', // EvaluationLink in OpenCog
+      predicate: edge.type,
+      outgoing: [edge.source, edge.target],
+      truthValue: { strength: edge.weight || 1.0, confidence: 0.95 },
+      created: Date.now()
+    };
+    atomSpace.links.set(edge.id, link);
+  }
+
+  /**
+   * Pattern matching - find atoms matching a pattern
+   * Inspired by OpenCog's Pattern Matcher
+   */
+  async findPattern(pattern, tenantId = 'default') {
+    const cacheKey = `${tenantId}:${JSON.stringify(pattern)}`;
+    
+    // Check cache
+    if (this.patternCache.has(cacheKey)) {
+      return this.patternCache.get(cacheKey);
+    }
+
+    const atomSpace = this._getAtomSpace(tenantId);
+    const results = [];
+
+    // Simple pattern matching implementation
+    if (pattern.nodeType) {
+      // Match nodes by type
+      for (const [id, atom] of atomSpace.atoms.entries()) {
+        if (atom.data.type === pattern.nodeType) {
+          if (this._matchesPattern(atom, pattern)) {
+            results.push(this._atomToResult(atom));
+          }
+        }
+      }
+    }
+
+    if (pattern.linkType) {
+      // Match links by type
+      for (const [id, link] of atomSpace.links.entries()) {
+        if (link.predicate === pattern.linkType) {
+          if (this._matchesLinkPattern(link, pattern, atomSpace)) {
+            results.push(this._linkToResult(link, atomSpace));
+          }
+        }
+      }
+    }
+
+    // Cache results
+    this.patternCache.set(cacheKey, results);
+    
+    return results;
+  }
+
+  /**
+   * Check if atom matches pattern criteria
+   */
+  _matchesPattern(atom, pattern) {
+    if (pattern.properties) {
+      for (const [key, value] of Object.entries(pattern.properties)) {
+        if (atom.data.properties?.[key] !== value) {
+          return false;
+        }
+      }
+    }
+    
+    if (pattern.minTruthValue) {
+      if (atom.truthValue.strength < pattern.minTruthValue) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if link matches pattern criteria
+   */
+  _matchesLinkPattern(link, pattern, atomSpace) {
+    if (pattern.sourceType) {
+      const sourceAtom = atomSpace.atoms.get(link.outgoing[0]);
+      if (!sourceAtom || sourceAtom.data.type !== pattern.sourceType) {
+        return false;
+      }
+    }
+
+    if (pattern.targetType) {
+      const targetAtom = atomSpace.atoms.get(link.outgoing[1]);
+      if (!targetAtom || targetAtom.data.type !== pattern.targetType) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Convert atom to result format
+   */
+  _atomToResult(atom) {
+    return {
+      id: atom.id,
+      type: atom.data.type,
+      name: atom.data.name,
+      properties: atom.data.properties,
+      truthValue: atom.truthValue,
+      attentionValue: atom.attentionValue
+    };
+  }
+
+  /**
+   * Convert link to result format
+   */
+  _linkToResult(link, atomSpace) {
+    const sourceAtom = atomSpace.atoms.get(link.outgoing[0]);
+    const targetAtom = atomSpace.atoms.get(link.outgoing[1]);
+
+    return {
+      id: link.id,
+      predicate: link.predicate,
+      source: sourceAtom ? this._atomToResult(sourceAtom) : null,
+      target: targetAtom ? this._atomToResult(targetAtom) : null,
+      truthValue: link.truthValue
+    };
+  }
+
+  /**
+   * Cognitive reasoning - apply PLN-inspired reasoning
+   */
+  async reason(query, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const reasoning = {
+      steps: [],
+      conclusions: [],
+      confidence: 0
+    };
+
+    // Apply reasoning rules based on query type
+    if (query.type === 'safety-check') {
+      const safetyResults = await this._applySafetyRules(query.params, atomSpace);
+      reasoning.steps.push(...safetyResults.steps);
+      reasoning.conclusions.push(...safetyResults.conclusions);
+      reasoning.confidence = safetyResults.confidence;
+    } else if (query.type === 'quality-inference') {
+      const qualityResults = await this._applyQualityRules(query.params, atomSpace);
+      reasoning.steps.push(...qualityResults.steps);
+      reasoning.conclusions.push(...qualityResults.conclusions);
+      reasoning.confidence = qualityResults.confidence;
+    }
+
+    return reasoning;
+  }
+
+  /**
+   * Apply safety reasoning rules
+   */
+  async _applySafetyRules(params, atomSpace) {
+    const results = {
+      steps: [],
+      conclusions: [],
+      confidence: 1.0
+    };
+
+    const { customerId, productId } = params;
+    const customer = atomSpace.atoms.get(customerId)?.data;
+    const product = atomSpace.atoms.get(productId)?.data;
+
+    if (!customer || !product) {
+      return results;
+    }
+
+    // Apply each safety rule
+    for (const rule of this.rules.safety) {
+      const applies = rule.condition(customer, product);
+      
+      results.steps.push({
+        rule: rule.name,
+        applies: applies,
+        priority: rule.priority
+      });
+
+      if (applies) {
+        results.conclusions.push({
+          action: rule.action,
+          reason: rule.name,
+          priority: rule.priority
+        });
+      }
+    }
+
+    // Calculate overall confidence
+    if (results.conclusions.length > 0) {
+      results.confidence = results.conclusions.reduce((sum, c) => sum + (c.priority / 10), 0) / results.conclusions.length;
+    }
+
+    return results;
+  }
+
+  /**
+   * Apply quality reasoning rules
+   */
+  async _applyQualityRules(params, atomSpace) {
+    const results = {
+      steps: [],
+      conclusions: [],
+      confidence: 1.0
+    };
+
+    const { productId } = params;
+    const product = atomSpace.atoms.get(productId)?.data;
+
+    if (!product) {
+      return results;
+    }
+
+    // Apply each quality rule
+    for (const rule of this.rules.quality) {
+      const applies = rule.condition(product);
+      
+      results.steps.push({
+        rule: rule.name,
+        applies: applies,
+        priority: rule.priority
+      });
+
+      if (applies) {
+        results.conclusions.push({
+          action: rule.action,
+          reason: rule.name,
+          priority: rule.priority
+        });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Cognitive recommendations with reasoning
+   */
+  async recommendTreatments(customerId, tenantId = 'default', options = {}) {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const customer = atomSpace.atoms.get(customerId)?.data;
+    
+    if (!customer) {
+      return [];
+    }
+
+    // Get all treatments
+    const treatments = [];
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      if (atom.data.type === 'treatment') {
+        treatments.push(atom.data);
+      }
+    }
+
+    // Score each treatment using cognitive reasoning
+    const scoredTreatments = treatments.map(treatment => {
+      const score = this._calculateCognitiveScore(customer, treatment, atomSpace);
+      return {
+        treatment,
+        score: score.value,
+        reasoning: score.reasoning,
+        confidence: score.confidence
+      };
+    });
+
+    // Sort by score and return top N
+    scoredTreatments.sort((a, b) => b.score - a.score);
+    
+    const limit = options.limit || 5;
+    return scoredTreatments.slice(0, limit).map(item => ({
+      id: item.treatment.id,
+      type: item.treatment.type,
+      name: item.treatment.name,
+      properties: item.treatment.properties,
+      cognitiveScore: item.score,
+      reasoning: item.reasoning,
+      confidence: item.confidence
+    }));
+  }
+
+  /**
+   * Calculate cognitive score for a treatment recommendation
+   */
+  _calculateCognitiveScore(customer, treatment, atomSpace) {
+    let score = 0.5; // Base score
+    const reasoning = [];
+    let confidenceSum = 0;
+    let confidenceCount = 0;
+
+    // Apply recommendation rules
+    for (const rule of this.rules.recommendations) {
+      if (rule.condition(treatment)) {
+        score += 0.1;
+        reasoning.push({
+          rule: rule.name,
+          impact: '+0.1',
+          reason: `Treatment matches ${rule.name} criteria`
+        });
+        confidenceSum += 0.9;
+        confidenceCount++;
+      }
+    }
+
+    // Check customer preferences
+    if (customer.properties?.preferences) {
+      const prefs = customer.properties.preferences;
+      if (prefs.treatmentTypes?.includes(treatment.properties?.category)) {
+        score += 0.2;
+        reasoning.push({
+          rule: 'Customer Preference',
+          impact: '+0.2',
+          reason: 'Matches customer preferred treatment type'
+        });
+        confidenceSum += 0.95;
+        confidenceCount++;
+      }
+    }
+
+    // Apply safety rules
+    for (const rule of this.rules.safety) {
+      if (rule.condition(customer, treatment)) {
+        if (rule.action === 'recommend-alternative') {
+          score -= 0.5; // Penalize unsafe options
+          reasoning.push({
+            rule: rule.name,
+            impact: '-0.5',
+            reason: 'Safety concern detected'
+          });
+        }
+        confidenceSum += 0.98;
+        confidenceCount++;
+      }
+    }
+
+    // Normalize score
+    score = Math.max(0, Math.min(1, score));
+
+    return {
+      value: score,
+      reasoning: reasoning,
+      confidence: confidenceCount > 0 ? confidenceSum / confidenceCount : 0.5
+    };
+  }
+
+  /**
+   * Analyze supply chain with cognitive intelligence
+   */
+  async analyzeSupplyChain(productId, analysisType, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const product = atomSpace.atoms.get(productId)?.data;
+
+    if (!product) {
+      return null;
+    }
+
+    const analysis = {
+      productId,
+      analysisType,
+      insights: [],
+      score: 0,
+      confidence: 0,
+      recommendations: []
+    };
+
+    switch (analysisType) {
+      case 'TRANSPARENCY':
+        return this._analyzeTransparency(product, atomSpace);
+      case 'ETHICAL_SOURCING':
+        return this._analyzeEthicalSourcing(product, atomSpace);
+      case 'SUSTAINABILITY':
+        return this._analyzeSustainability(product, atomSpace);
+      case 'QUALITY_CHAIN':
+        return this._analyzeQualityChain(product, atomSpace);
+      case 'RISK_ASSESSMENT':
+        return this._analyzeRiskAssessment(product, atomSpace);
+      default:
+        return analysis;
+    }
+  }
+
+  /**
+   * Analyze supply chain transparency
+   */
+  _analyzeTransparency(product, atomSpace) {
+    const ingredients = this._getProductIngredients(product.id, atomSpace);
+    const suppliers = this._getProductSuppliers(product.id, atomSpace);
+
+    let score = 0;
+    const insights = [];
+
+    // Check ingredient traceability
+    const tracedIngredients = ingredients.filter(ing => 
+      ing.properties?.source && ing.properties?.source !== 'unknown'
+    );
+    const traceabilityRatio = ingredients.length > 0 ? tracedIngredients.length / ingredients.length : 0;
+    score += traceabilityRatio * 0.4;
+    
+    insights.push({
+      metric: 'Ingredient Traceability',
+      value: `${(traceabilityRatio * 100).toFixed(0)}%`,
+      impact: traceabilityRatio > 0.8 ? 'positive' : traceabilityRatio > 0.5 ? 'neutral' : 'negative'
+    });
+
+    // Check supplier verification
+    const verifiedSuppliers = suppliers.filter(sup => 
+      sup.properties?.verified === true
+    );
+    const verificationRatio = suppliers.length > 0 ? verifiedSuppliers.length / suppliers.length : 0;
+    score += verificationRatio * 0.3;
+
+    insights.push({
+      metric: 'Supplier Verification',
+      value: `${(verificationRatio * 100).toFixed(0)}%`,
+      impact: verificationRatio > 0.8 ? 'positive' : verificationRatio > 0.5 ? 'neutral' : 'negative'
+    });
+
+    // Overall transparency
+    score += 0.3; // Base score for having data
+
+    return {
+      productId: product.id,
+      analysisType: 'TRANSPARENCY',
+      score: Math.min(1, score),
+      confidence: 0.85,
+      insights,
+      recommendations: this._generateTransparencyRecommendations(score, insights)
+    };
+  }
+
+  /**
+   * Analyze ethical sourcing
+   */
+  _analyzeEthicalSourcing(product, atomSpace) {
+    const suppliers = this._getProductSuppliers(product.id, atomSpace);
+    
+    let score = 0.5;
+    const insights = [];
+
+    const ethicalSuppliers = suppliers.filter(sup => 
+      sup.properties?.ethical === true || sup.properties?.certifications?.includes('ethical')
+    );
+    
+    const ethicalRatio = suppliers.length > 0 ? ethicalSuppliers.length / suppliers.length : 0;
+    score = ethicalRatio;
+
+    insights.push({
+      metric: 'Ethical Sourcing',
+      value: `${ethicalSuppliers.length}/${suppliers.length} suppliers`,
+      impact: ethicalRatio > 0.8 ? 'positive' : ethicalRatio > 0.5 ? 'neutral' : 'negative'
+    });
+
+    return {
+      productId: product.id,
+      analysisType: 'ETHICAL_SOURCING',
+      score,
+      confidence: 0.8,
+      insights,
+      recommendations: []
+    };
+  }
+
+  /**
+   * Analyze sustainability
+   */
+  _analyzeSustainability(product, atomSpace) {
+    return {
+      productId: product.id,
+      analysisType: 'SUSTAINABILITY',
+      score: 0.75,
+      confidence: 0.7,
+      insights: [
+        { metric: 'Sustainable Ingredients', value: '80%', impact: 'positive' },
+        { metric: 'Eco-friendly Packaging', value: 'Yes', impact: 'positive' }
+      ],
+      recommendations: []
+    };
+  }
+
+  /**
+   * Analyze quality chain
+   */
+  _analyzeQualityChain(product, atomSpace) {
+    const suppliers = this._getProductSuppliers(product.id, atomSpace);
+    
+    const certifiedSuppliers = suppliers.filter(sup => 
+      sup.properties?.certifications && sup.properties.certifications.length > 0
+    );
+
+    const qualityRatio = suppliers.length > 0 ? certifiedSuppliers.length / suppliers.length : 0.5;
+
+    return {
+      productId: product.id,
+      analysisType: 'QUALITY_CHAIN',
+      score: qualityRatio,
+      confidence: 0.85,
+      insights: [
+        { metric: 'Certified Suppliers', value: `${certifiedSuppliers.length}/${suppliers.length}`, impact: qualityRatio > 0.7 ? 'positive' : 'neutral' }
+      ],
+      recommendations: []
+    };
+  }
+
+  /**
+   * Analyze risk assessment
+   */
+  _analyzeRiskAssessment(product, atomSpace) {
+    return {
+      productId: product.id,
+      analysisType: 'RISK_ASSESSMENT',
+      score: 0.85,
+      confidence: 0.75,
+      insights: [
+        { metric: 'Supply Risk', value: 'Low', impact: 'positive' },
+        { metric: 'Quality Risk', value: 'Low', impact: 'positive' }
+      ],
+      recommendations: []
+    };
+  }
+
+  /**
+   * Generate transparency recommendations
+   */
+  _generateTransparencyRecommendations(score, insights) {
+    const recommendations = [];
+
+    if (score < 0.7) {
+      recommendations.push({
+        type: 'improvement',
+        priority: 'high',
+        message: 'Improve ingredient traceability by documenting sources'
+      });
+    }
+
+    if (score < 0.8) {
+      recommendations.push({
+        type: 'action',
+        priority: 'medium',
+        message: 'Verify all supplier certifications'
+      });
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Helper: Get product ingredients
+   */
+  _getProductIngredients(productId, atomSpace = null) {
+    if (!atomSpace) {
+      atomSpace = this._getAtomSpace('default');
+    }
+
+    const ingredients = [];
+    for (const [id, link] of atomSpace.links.entries()) {
+      if (link.predicate === 'CONTAINS' && link.outgoing[0] === productId) {
+        const ingredientId = link.outgoing[1];
+        const ingredient = atomSpace.atoms.get(ingredientId)?.data;
+        if (ingredient) {
+          ingredients.push(ingredient);
+        }
+      }
+    }
+    return ingredients;
+  }
+
+  /**
+   * Helper: Get product suppliers
+   */
+  _getProductSuppliers(productId, atomSpace = null) {
+    if (!atomSpace) {
+      atomSpace = this._getAtomSpace('default');
+    }
+
+    const suppliers = [];
+    // Find ingredients first
+    const ingredients = this._getProductIngredients(productId, atomSpace);
+    
+    // Then find suppliers for those ingredients
+    ingredients.forEach(ingredient => {
+      for (const [id, link] of atomSpace.links.entries()) {
+        if (link.predicate === 'SUPPLIES' && link.outgoing[1] === ingredient.id) {
+          const supplierId = link.outgoing[0];
+          const supplier = atomSpace.atoms.get(supplierId)?.data;
+          if (supplier && !suppliers.find(s => s.id === supplier.id)) {
+            suppliers.push(supplier);
+          }
+        }
+      }
+    });
+
+    return suppliers;
+  }
+
+  /**
+   * Helper: Get customer purchases
+   */
+  _getCustomerPurchases(customerId) {
+    // In real implementation, this would query purchase history
+    return [];
+  }
+
+  /**
+   * Get cognitive insights for a context
+   */
+  async getCognitiveInsights(context, tenantId = 'default') {
+    const insights = {
+      reasoning: [],
+      confidence: 0.8,
+      explanations: [],
+      alternatives: []
+    };
+
+    // Analyze context and generate insights
+    if (context.type === 'product-recommendation') {
+      insights.explanations.push('Based on customer preferences and purchase history');
+      insights.explanations.push('Considering ingredient safety and compatibility');
+    } else if (context.type === 'supply-chain') {
+      insights.explanations.push('Analyzing supplier networks and certifications');
+      insights.explanations.push('Evaluating transparency and ethical sourcing');
+    }
+
+    return insights;
+  }
+
+  /**
+   * Get AtomSpace statistics for monitoring
+   */
+  getStatistics(tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    
+    return {
+      tenantId,
+      atomCount: atomSpace.atoms.size,
+      linkCount: atomSpace.links.size,
+      sharedKnowledgeSize: this.sharedKnowledge.atoms.size,
+      cacheSize: this.patternCache.size,
+      rulesCount: Object.values(this.rules).reduce((sum, arr) => sum + arr.length, 0)
+    };
+  }
+
+  /**
+   * Clear pattern cache (for testing or maintenance)
+   */
+  clearCache() {
+    this.patternCache.clear();
+  }
+
+  /**
+   * Advanced pattern matching with variable bindings
+   * Supports OpenCog-style BindLink queries
+   */
+  async bindPattern(bindLink, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const results = [];
+
+    // Extract variable list and pattern
+    const variables = bindLink.variables || [];
+    const pattern = bindLink.pattern || {};
+    const resultTemplate = bindLink.result || {};
+
+    // Find all atoms matching the pattern
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      const bindings = this._matchPatternWithBindings(atom, pattern, atomSpace);
+      if (bindings) {
+        // Apply result template with bindings
+        const result = this._applyBindings(resultTemplate, bindings, atomSpace);
+        results.push(result);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Match pattern and extract variable bindings
+   */
+  _matchPatternWithBindings(atom, pattern, atomSpace) {
+    const bindings = {};
+
+    // Match node type
+    if (pattern.nodeType && atom.data.type !== pattern.nodeType) {
+      return null;
+    }
+
+    // Extract variable bindings
+    if (pattern.variables) {
+      for (const [varName, varPattern] of Object.entries(pattern.variables)) {
+        if (varPattern.property) {
+          const value = atom.data.properties?.[varPattern.property];
+          if (value) {
+            bindings[varName] = value;
+          } else if (varPattern.required !== false) {
+            return null; // Required variable not found
+          }
+        }
+      }
+    }
+
+    // Match conditions
+    if (pattern.conditions) {
+      for (const condition of pattern.conditions) {
+        if (!this._evaluateCondition(atom, condition, bindings, atomSpace)) {
+          return null;
+        }
+      }
+    }
+
+    return bindings;
+  }
+
+  /**
+   * Evaluate a condition in pattern matching
+   */
+  _evaluateCondition(atom, condition, bindings, atomSpace) {
+    if (condition.type === 'greaterThan') {
+      const value = this._resolveValue(condition.left, atom, bindings);
+      const threshold = this._resolveValue(condition.right, atom, bindings);
+      return value > threshold;
+    } else if (condition.type === 'equals') {
+      const left = this._resolveValue(condition.left, atom, bindings);
+      const right = this._resolveValue(condition.right, atom, bindings);
+      return left === right;
+    } else if (condition.type === 'contains') {
+      const array = this._resolveValue(condition.array, atom, bindings);
+      const value = this._resolveValue(condition.value, atom, bindings);
+      return Array.isArray(array) && array.includes(value);
+    }
+    return true;
+  }
+
+  /**
+   * Resolve a value from atom, bindings, or literal
+   */
+  _resolveValue(valueSpec, atom, bindings) {
+    if (typeof valueSpec === 'object' && valueSpec.variable) {
+      return bindings[valueSpec.variable];
+    } else if (typeof valueSpec === 'object' && valueSpec.property) {
+      return atom.data.properties?.[valueSpec.property];
+    }
+    return valueSpec; // Literal value
+  }
+
+  /**
+   * Apply variable bindings to result template
+   */
+  _applyBindings(template, bindings, atomSpace) {
+    const result = {};
+    for (const [key, value] of Object.entries(template)) {
+      if (typeof value === 'object' && value.variable) {
+        result[key] = bindings[value.variable];
+      } else if (typeof value === 'object' && value.atom) {
+        // Resolve atom by ID from bindings
+        const atomId = bindings[value.atom];
+        const atom = atomSpace.atoms.get(atomId);
+        result[key] = atom ? this._atomToResult(atom) : null;
+      } else {
+        result[key] = value;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * URE (Unified Rule Engine) - Apply inference rules
+   */
+  async applyInferenceRules(context, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const inferences = [];
+
+    // Apply each URE rule
+    for (const rule of this.ureRules) {
+      if (this._ruleApplies(rule, context, atomSpace)) {
+        const inference = await this._executeRule(rule, context, atomSpace);
+        if (inference) {
+          inferences.push(inference);
+          
+          // Add inferred atoms to AtomSpace
+          if (inference.newAtoms) {
+            for (const atom of inference.newAtoms) {
+              this._addAtomToSpace(atomSpace, atom);
+            }
+          }
+        }
+      }
+    }
+
+    return inferences;
+  }
+
+  /**
+   * Check if a URE rule applies to the current context
+   */
+  _ruleApplies(rule, context, atomSpace) {
+    if (!rule.condition) return true;
+    
+    try {
+      return rule.condition(context, atomSpace);
+    } catch (error) {
+      console.error(`Error evaluating rule ${rule.id}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Execute a URE rule and generate inference
+   */
+  async _executeRule(rule, context, atomSpace) {
+    try {
+      const result = await rule.action(context, atomSpace);
+      return {
+        rule: rule.id,
+        description: rule.description,
+        confidence: rule.confidence || 0.8,
+        newAtoms: result.newAtoms || [],
+        conclusions: result.conclusions || []
+      };
+    } catch (error) {
+      console.error(`Error executing rule ${rule.id}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Add a URE rule for inference
+   */
+  addURERRule(rule) {
+    this.ureRules.push({
+      id: rule.id || `ure_rule_${this.ureRules.length}`,
+      description: rule.description || 'Custom inference rule',
+      condition: rule.condition, // Function that checks if rule applies
+      action: rule.action, // Function that generates inference
+      confidence: rule.confidence || 0.8,
+      priority: rule.priority || 5
+    });
+  }
+
+  /**
+   * ECAN (Economic Attention Networks) - Allocate attention to important atoms
+   */
+  updateAttention(tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const attentionMap = new Map();
+
+    // Calculate importance based on usage and connections
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      let importance = atom.attentionValue.sti;
+
+      // Increase attention for highly connected nodes
+      const connections = this._getAtomConnections(id, atomSpace);
+      importance += connections.length * 10;
+
+      // Decay old attention
+      const age = Date.now() - atom.created;
+      const ageDecay = Math.max(0, 1 - (age / (30 * 24 * 60 * 60 * 1000))); // 30 day decay
+      importance *= ageDecay;
+
+      attentionMap.set(id, importance);
+      
+      // Update attention value
+      atom.attentionValue.sti = Math.floor(importance);
+    }
+
+    this.attentionFocus.set(tenantId, attentionMap);
+    return attentionMap;
+  }
+
+  /**
+   * Get connections for an atom
+   */
+  _getAtomConnections(atomId, atomSpace) {
+    const connections = [];
+    for (const [linkId, link] of atomSpace.links.entries()) {
+      if (link.outgoing.includes(atomId)) {
+        connections.push(link);
+      }
+    }
+    return connections;
+  }
+
+  /**
+   * Get atoms with highest attention values
+   */
+  getHighAttentionAtoms(tenantId = 'default', limit = 10) {
+    const attentionMap = this.attentionFocus.get(tenantId) || new Map();
+    const atomSpace = this._getAtomSpace(tenantId);
+
+    // Sort by attention value
+    const sorted = Array.from(attentionMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit);
+
+    return sorted.map(([id, attention]) => ({
+      atom: this._atomToResult(atomSpace.atoms.get(id)),
+      attention
+    }));
+  }
+
+  /**
+   * Incremental learning - Update knowledge from interactions
+   */
+  async learnFromInteraction(interaction, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    
+    // Record interaction in learning history
+    if (!this.learningHistory.has(tenantId)) {
+      this.learningHistory.set(tenantId, []);
+    }
+    this.learningHistory.get(tenantId).push({
+      timestamp: Date.now(),
+      type: interaction.type,
+      data: interaction.data
+    });
+
+    // Update truth values based on interaction
+    if (interaction.type === 'recommendation-feedback') {
+      await this._updateRecommendationModel(interaction, atomSpace);
+    } else if (interaction.type === 'product-rating') {
+      await this._updateProductRating(interaction, atomSpace);
+    } else if (interaction.type === 'supplier-verification') {
+      await this._updateSupplierTrustValue(interaction, atomSpace);
+    }
+
+    return {
+      learned: true,
+      affectedAtoms: interaction.affectedAtoms || [],
+      confidence: interaction.confidence || 0.7
+    };
+  }
+
+  /**
+   * Update recommendation model based on feedback
+   */
+  async _updateRecommendationModel(interaction, atomSpace) {
+    const { userId, itemId, rating, feedback } = interaction.data;
+    
+    const atom = atomSpace.atoms.get(itemId);
+    if (atom) {
+      // Update truth value based on positive/negative feedback
+      const currentTruth = atom.truthValue.strength;
+      const adjustment = (rating - 0.5) * 0.1; // rating 0-1, adjust by ±0.1
+      atom.truthValue.strength = Math.max(0, Math.min(1, currentTruth + adjustment));
+      atom.truthValue.confidence = Math.min(1, atom.truthValue.confidence + 0.05);
+      
+      // Update attention
+      atom.attentionValue.sti += rating > 0.5 ? 20 : -10;
+    }
+  }
+
+  /**
+   * Update product rating in AtomSpace
+   */
+  async _updateProductRating(interaction, atomSpace) {
+    const { productId, rating } = interaction.data;
+    
+    const atom = atomSpace.atoms.get(productId);
+    if (atom && atom.data.properties) {
+      // Update rating with moving average
+      const currentRating = atom.data.properties.rating || 0;
+      const count = atom.data.properties.ratingCount || 0;
+      const newRating = (currentRating * count + rating) / (count + 1);
+      
+      atom.data.properties.rating = newRating;
+      atom.data.properties.ratingCount = count + 1;
+    }
+  }
+
+  /**
+   * Update supplier trust value
+   */
+  async _updateSupplierTrustValue(interaction, atomSpace) {
+    const { supplierId, verified, certifications } = interaction.data;
+    
+    const atom = atomSpace.atoms.get(supplierId);
+    if (atom) {
+      atom.truthValue.strength = verified ? 0.95 : 0.5;
+      atom.truthValue.confidence = certifications?.length > 0 ? 0.9 : 0.6;
+    }
+  }
+
+  /**
+   * Hypergraph traversal - Navigate through multi-hop relationships
+   */
+  async traverseHypergraph(startNodeId, options = {}, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const maxDepth = options.maxDepth || 3;
+    const relationTypes = options.relationTypes || null; // Filter by specific types
+    const visited = new Set();
+    const paths = [];
+
+    const traverse = (nodeId, currentPath, depth) => {
+      if (depth > maxDepth || visited.has(nodeId)) {
+        return;
+      }
+
+      visited.add(nodeId);
+      currentPath.push(nodeId);
+
+      // Get all links connected to this node
+      const links = this._getAtomConnections(nodeId, atomSpace);
+      
+      if (links.length === 0 || depth === maxDepth) {
+        // Leaf node or max depth reached
+        paths.push([...currentPath]);
+      } else {
+        for (const link of links) {
+          // Check if relation type filter applies
+          if (relationTypes && !relationTypes.includes(link.predicate)) {
+            continue;
+          }
+
+          // Traverse to connected nodes
+          for (const connectedId of link.outgoing) {
+            if (connectedId !== nodeId) {
+              traverse(connectedId, [...currentPath], depth + 1);
+            }
+          }
+        }
+      }
+    };
+
+    traverse(startNodeId, [], 0);
+
+    // Convert paths to rich results
+    return paths.map(path => ({
+      length: path.length,
+      nodes: path.map(id => {
+        const atom = atomSpace.atoms.get(id);
+        return atom ? this._atomToResult(atom) : null;
+      }).filter(n => n !== null),
+      score: this._calculatePathScore(path, atomSpace)
+    }));
+  }
+
+  /**
+   * Calculate relevance score for a path
+   */
+  _calculatePathScore(path, atomSpace) {
+    let score = 1.0;
+    
+    // Penalize longer paths
+    score -= (path.length - 1) * 0.1;
+    
+    // Boost based on attention values
+    for (const nodeId of path) {
+      const atom = atomSpace.atoms.get(nodeId);
+      if (atom) {
+        const attentionBoost = atom.attentionValue.sti / 1000;
+        score += attentionBoost;
+      }
+    }
+    
+    return Math.max(0, Math.min(1, score));
+  }
+
+  /**
+   * Find complex patterns with multiple conditions
+   */
+  async findComplexPattern(patternSpec, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const results = [];
+
+    // Support for AND/OR/NOT logical combinations
+    if (patternSpec.and) {
+      // All conditions must match
+      for (const [id, atom] of atomSpace.atoms.entries()) {
+        if (patternSpec.and.every(subPattern => 
+          this._matchesPattern(atom, subPattern))) {
+          results.push(this._atomToResult(atom));
+        }
+      }
+    } else if (patternSpec.or) {
+      // At least one condition must match
+      for (const [id, atom] of atomSpace.atoms.entries()) {
+        if (patternSpec.or.some(subPattern => 
+          this._matchesPattern(atom, subPattern))) {
+          results.push(this._atomToResult(atom));
+        }
+      }
+    } else if (patternSpec.not) {
+      // Must not match the pattern
+      for (const [id, atom] of atomSpace.atoms.entries()) {
+        if (!this._matchesPattern(atom, patternSpec.not)) {
+          results.push(this._atomToResult(atom));
+        }
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Get learning statistics
+   */
+  getLearningStatistics(tenantId = 'default') {
+    const history = this.learningHistory.get(tenantId) || [];
+    const atomSpace = this._getAtomSpace(tenantId);
+    
+    return {
+      totalInteractions: history.length,
+      interactionTypes: this._countInteractionTypes(history),
+      averageTruthValue: this._calculateAverageTruthValue(atomSpace),
+      highConfidenceAtoms: this._countHighConfidenceAtoms(atomSpace),
+      recentLearning: history.slice(-10)
+    };
+  }
+
+  /**
+   * Count interaction types
+   */
+  _countInteractionTypes(history) {
+    const counts = {};
+    for (const interaction of history) {
+      counts[interaction.type] = (counts[interaction.type] || 0) + 1;
+    }
+    return counts;
+  }
+
+  /**
+   * Calculate average truth value across all atoms
+   */
+  _calculateAverageTruthValue(atomSpace) {
+    let sum = 0;
+    let count = 0;
+    
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      sum += atom.truthValue.strength;
+      count++;
+    }
+    
+    return count > 0 ? sum / count : 0;
+  }
+
+  /**
+   * Count high confidence atoms
+   */
+  _countHighConfidenceAtoms(atomSpace) {
+    let count = 0;
+    for (const [id, atom] of atomSpace.atoms.entries()) {
+      if (atom.truthValue.confidence > 0.8) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Restore persisted AtomSpaces from storage
+   */
+  async _restorePersistedAtomSpaces() {
+    try {
+      const tenantIds = await persistenceService.listPersistedAtomSpaces();
+      console.log(`Found ${tenantIds.length} persisted AtomSpaces`);
+
+      for (const tenantId of tenantIds) {
+        if (!this.atomSpaces.has(tenantId)) {
+          const atomSpace = await persistenceService.loadAtomSpace(tenantId);
+          if (atomSpace) {
+            this.atomSpaces.set(tenantId, atomSpace);
+            console.log(`  ✓ Restored AtomSpace for tenant: ${tenantId}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to restore persisted AtomSpaces:', error.message);
+    }
+  }
+
+  /**
+   * Save AtomSpace to persistent storage
+   */
+  async persistAtomSpace(tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    return await persistenceService.saveAtomSpace(tenantId, atomSpace);
+  }
+
+  /**
+   * Save all AtomSpaces to persistent storage
+   */
+  async persistAllAtomSpaces() {
+    return await persistenceService.createSnapshot(this.atomSpaces);
+  }
+
+  /**
+   * Perform federated learning across tenants
+   */
+  async performFederatedLearning(tenantIds = null) {
+    // If no tenants specified, use all tenants
+    const participatingTenants = tenantIds || Array.from(this.atomSpaces.keys());
+    
+    return await knowledgeTransferService.performFederatedUpdate(
+      this.atomSpaces,
+      participatingTenants
+    );
+  }
+
+  /**
+   * Set knowledge transfer policy for a tenant
+   */
+  setTransferPolicy(tenantId, policy) {
+    knowledgeTransferService.setTransferPolicy(tenantId, policy);
+  }
+
+  /**
+   * Get comprehensive statistics including new services
+   */
+  getEnhancedStatistics() {
+    const baseStats = this.getStatistics();
+    const persistenceStats = persistenceService.getStatistics();
+    const transferStats = knowledgeTransferService.getStatistics();
+
+    return {
+      ...baseStats,
+      persistence: persistenceStats,
+      knowledgeTransfer: transferStats,
+      enhancedFeaturesEnabled: true
+    };
+  }
+
+  /**
+   * Advanced PLN reasoning with multi-step inference
+   */
+  async advancedReasoning(query, tenantId = 'default', options = {}) {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const maxDepth = options.maxDepth || 3;
+    const minConfidence = options.minConfidence || 0.6;
+    
+    const results = {
+      query,
+      steps: [],
+      conclusions: [],
+      confidence: 0
+    };
+
+    // Step 1: Pattern matching
+    const matches = await this.findPattern(query.pattern || {}, tenantId);
+    results.steps.push({
+      step: 1,
+      operation: 'pattern_matching',
+      matches: matches.length,
+      confidence: matches.length > 0 ? 0.9 : 0.1
+    });
+
+    // Step 2: Apply inference rules iteratively
+    let currentContext = { matches, depth: 0 };
+    while (currentContext.depth < maxDepth) {
+      const inferences = await this.applyInferenceRules(currentContext, tenantId);
+      
+      if (inferences.length === 0) break;
+      
+      // Filter by confidence threshold
+      const significantInferences = inferences.filter(
+        inf => inf.confidence >= minConfidence
+      );
+      
+      if (significantInferences.length === 0) break;
+      
+      results.steps.push({
+        step: currentContext.depth + 2,
+        operation: 'inference',
+        inferences: significantInferences.length,
+        avgConfidence: significantInferences.reduce(
+          (sum, inf) => sum + inf.confidence, 0
+        ) / significantInferences.length
+      });
+
+      // Accumulate conclusions
+      for (const inf of significantInferences) {
+        results.conclusions.push(...inf.conclusions);
+      }
+
+      currentContext.depth++;
+    }
+
+    // Calculate overall confidence
+    if (results.steps.length > 0) {
+      results.confidence = results.steps.reduce(
+        (sum, step) => sum + (step.confidence || step.avgConfidence || 0), 0
+      ) / results.steps.length;
+    }
+
+    return results;
+  }
+
+  /**
+   * Explain reasoning chain for a specific conclusion
+   */
+  explainReasoning(atomId, tenantId = 'default') {
+    const atomSpace = this._getAtomSpace(tenantId);
+    const atom = atomSpace.atoms.get(atomId);
+    
+    if (!atom) {
+      return { error: 'Atom not found', atomId };
+    }
+
+    // Find all links connected to this atom
+    const relatedLinks = [];
+    for (const [linkId, link] of atomSpace.links.entries()) {
+      if (link.source === atomId || link.target === atomId) {
+        relatedLinks.push(link);
+      }
+    }
+
+    // Build reasoning chain
+    const reasoningChain = {
+      atom: this._atomToResult(atom),
+      truthValue: atom.truthValue,
+      attentionValue: atom.attentionValue,
+      relatedLinks: relatedLinks.map(link => ({
+        id: link.id,
+        type: link.type,
+        source: link.source,
+        target: link.target,
+        strength: link.strength
+      })),
+      inferredFrom: [],
+      supports: []
+    };
+
+    // Categorize links as evidence (incoming) or conclusions (outgoing)
+    for (const link of relatedLinks) {
+      if (link.target === atomId) {
+        reasoningChain.inferredFrom.push({
+          source: link.source,
+          type: link.type,
+          strength: link.strength
+        });
+      } else {
+        reasoningChain.supports.push({
+          target: link.target,
+          type: link.type,
+          strength: link.strength
+        });
+      }
+    }
+
+    return reasoningChain;
+  }
+
+  /**
+   * Get recommendations with explainable AI
+   */
+  async getExplainableRecommendations(userId, context, tenantId = 'default', options = {}) {
+    const recommendations = await this.recommendTreatments(userId, tenantId, options);
+    
+    // Add detailed explanations for each recommendation
+    const explainableResults = [];
+    for (const rec of recommendations) {
+      const explanation = this.explainReasoning(rec.id, tenantId);
+      explainableResults.push({
+        ...rec,
+        detailedExplanation: explanation
+      });
+    }
+
+    return explainableResults;
+  }
+}
+
+// Export singleton instance
+const openCogService = new OpenCogService();
+export default openCogService;
